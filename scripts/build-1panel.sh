@@ -72,9 +72,13 @@ for pair in "x86:x86" "arm:arm"; do
   cp -a "$FNOS/." "$local_pkg/"
   rm -rf "$local_pkg/bin" # app.tgz 已含启动器，包内不留散文件
   cp "$WORK/app-$arch.tgz" "$local_pkg/app.tgz"
-  # 共享 lifecycle 框架 + 应用覆盖
-  cp "$SHARED/main" "$SHARED/common" "$local_pkg/cmd/"
-  chmod +x "$local_pkg/cmd/main"
+  # 共享 lifecycle 框架：完整 cmd/（main+common+installer+8 个 init/callback 钩子）
+  # fnOS 通过 cmd/install_init、cmd/install_callback 等调用生命周期，缺一即报
+  # "install_init is not exist"。先整体拷 shared/cmd/ 覆盖散文件，再把应用自带的
+  # cmd/service-setup（seed_1pctl 等）一并保留合并进同目录。
+  cp -a "$SHARED/." "$local_pkg/cmd/"
+  [ -f "$local_pkg/cmd/service-setup" ] || cp -a "$FNOS/cmd/service-setup" "$local_pkg/cmd/"
+  chmod +x "$local_pkg/cmd/main" "$local_pkg/cmd/installer" "$local_pkg"/cmd/*_init "$local_pkg"/cmd/*_callback 2>/dev/null || true
   # manifest：版本/平台/checksum
   sed -i "s/^version.*/version         = ${VERSION}/" "$local_pkg/manifest"
   if grep -q '^platform' "$local_pkg/manifest"; then

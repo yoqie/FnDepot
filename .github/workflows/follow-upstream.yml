@@ -51,16 +51,20 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           HAS_FPK=$(ls dist/*.fpk 2>/dev/null | head -1 || true)
           if [ -n "$HAS_FPK" ]; then
-            TAG="sync-$(date +%Y%m%d-%H%M%S)"
+            # Release 名/tag 用「应用名 + 版本」（如 1panel 1.10.34-lts-1）。
+            # 版本统一取自 build/<slug>/meta.json，多包时取第一个（当前以 1panel 为主）。
+            APP_NAME=$(node -e "const m=require('./build/1panel/meta.json');console.log(m.displayName||'1panel')" 2>/dev/null || echo "app")
+            APP_VER=$(node -e "const m=require('./build/1panel/meta.json');console.log(m.version)" 2>/dev/null || echo "update")
+            TAG="${APP_NAME}-${APP_VER}"
             echo "TAG=$TAG" >> "$GITHUB_ENV"
             node scripts/finalize-1panel.mjs --repo ${{ github.repository }} --tag "$TAG" --dist dist || true
             node scripts/finalize.mjs --repo ${{ github.repository }} --tag "$TAG" --dist dist || true
-            git add fnpack.json apps/ assets/ build/ shared/ scripts/ README.md pending.json LICENSE
+            git add fnpack.json apps/ assets/ build/ shared/ scripts/ README.md LICENSE
             git commit -m "chore: follow 1Panel $TAG" || true
             git push
             gh release create "$TAG" dist/*.fpk \
-              --title "跟随更新 $TAG" \
-              --notes "本次自动跟随 1Panel 官方打包的 FPK，详见 commit 记录。"
+              --title "$APP_NAME $APP_VER" \
+              --notes "自动跟随 1Panel 官方打包更新：$APP_NAME $APP_VER。由本源 GitHub Actions 生成。"
           else
             git add fnpack.json apps/ build/ shared/ scripts/ README.md pending.json LICENSE || true
             git diff --cached --quiet || { git commit -m "chore: sync from 1Panel"; git push; }
