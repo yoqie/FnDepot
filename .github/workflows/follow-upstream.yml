@@ -36,13 +36,14 @@ jobs:
           node scripts/update-index.mjs --repo ${{ github.repository }}
 
       - name: Validate fnpack skeleton
-        run: node -e "
+        run: |
+          node -e "
           const j=require('./fnpack.json');
-          if(j.schema_version!=='2') throw new Error('schema_version must be \"2\"');
+          if(j.schema_version!=='2') throw new Error('schema_version must be 2');
           if(!j.source_info?.name||!j.source_info?.author) throw new Error('source_info incomplete');
           if(typeof j.apps!=='object') throw new Error('apps must be object');
           console.log('apps indexed:',Object.keys(j.apps).join(', '));
-        "
+          "
 
       - id: dump
         name: Dump pending + upload
