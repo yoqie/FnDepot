@@ -1,6 +1,23 @@
 {
   "app_name": "1panel",
-  "releases": {},
+  "releases": {
+    "1.10.34-lts-1": {
+      "changelog": "跟随 1Panel 官方 v1 LTS 1.10.34-lts 自动打包（原生双架构）。",
+      "updated_at": "2026-09-03T09:28:31.362Z",
+      "packages": {
+        "x86": {
+          "download_url": "https://github.com/yoqie/FnDepot/releases/download/sync-20260903-panel/1panel_1.10.34-lts-1_x86.fpk",
+          "sha256": "94504fc84fd85ea41dca846a7f71a4228180e6db61bd2c5ebebc68daf9cba8fd",
+          "size": 37459844
+        },
+        "arm": {
+          "download_url": "https://github.com/yoqie/FnDepot/releases/download/sync-20260903-panel/1panel_1.10.34-lts-1_arm.fpk",
+          "sha256": "035aa25fcf1faa5e5f74c2bfbeea133bea84261d9a2c278023353ddda277ea91",
+          "size": 35227759
+        }
+      }
+    }
+  },
   "display_name": "1Panel",
   "desc": "开源服务器运维管理面板，提供可视化的 Linux 服务器管理。",
   "platform": [
