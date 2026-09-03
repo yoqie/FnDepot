@@ -1,0 +1,4 @@
+#!/bin/bash
+"$(dirname "$0")/main" stop || true
+"$(dirname "$0")/main" start || true
+exit 0

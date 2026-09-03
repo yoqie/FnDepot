@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# 运行时/目标工具应用：无常驻服务
+case $1 in
+start)
+    exit 0
+    ;;
+stop)
+    exit 0
+    ;;
+status)
+    exit 0
+    ;;
+log)
+    exit 0
+    ;;
+*)
+    exit 1
+    ;;
+esac

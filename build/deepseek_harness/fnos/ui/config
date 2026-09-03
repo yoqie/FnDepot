@@ -1,0 +1,15 @@
+{
+    ".url": {
+        "deepseek_harness.main":
+        {
+            "title": "DeepSeek Harness",
+            "desc": "DeepSeek Harness Agent",
+            "icon": "images/{0}.png",
+            "type": "url",
+            "port": "3080",
+            "protocol": "http",
+            "url": "/",
+            "allUsers": true
+        }
+    }
+}

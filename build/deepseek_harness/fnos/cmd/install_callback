@@ -1,0 +1,17 @@
+#!/bin/bash
+# Verify runtime + node runtime present after install.
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+export PATH="/var/apps/nodejs_v24/target/bin:$PATH"
+cd "${TRIM_APPDEST}" 2>/dev/null || exit 0
+DSH_CLI="${TRIM_APPDEST}/runtime/node_modules/@deepseek-ai/dsh/lib/bin.js"
+DSH_CLI2="${TRIM_APPDEST}/runtime/node_modules/.bin/dsh"
+if [ ! -f "$DSH_CLI" ] && [ ! -f "$DSH_CLI2" ]; then
+  echo "ERROR: DSH runtime not installed at ${TRIM_APPDEST}/runtime" >> "$TRIM_TEMP_LOGFILE"
+  exit 1
+fi
+node_ver=$(node --version 2>/dev/null | tr -d 'v' | cut -d. -f1)
+if [ -z "$node_ver" ] || [ "$node_ver" -lt 24 ] 2>/dev/null; then
+  echo "ERROR: nodejs_v24 runtime (node>=24) not available on PATH: /var/apps/nodejs_v24/target/bin" >> "$TRIM_TEMP_LOGFILE"
+  exit 1
+fi
+exit 0

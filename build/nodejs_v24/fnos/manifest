@@ -1,0 +1,16 @@
+appname         = nodejs_v24
+version         = 0.0.0
+display_name    = Node.js v24
+desc            = "Node.js® 是一个免费、开源、跨平台的 JavaScript 运行时环境，作为 DeepSeek Harness 等应用的运行时依赖。"
+platform        = x86
+source          = thirdparty
+maintainer      = nodejs
+maintainer_url  = https://nodejs.org/
+distributor     = FnDepot
+distributor_url = https://github.com/yoqie/FnDepot
+ctl_stop        = false
+checkport       = false
+disable_authorization_path = true
+desktop_uidir   =
+desktop_applaunchname =
+checksum        =

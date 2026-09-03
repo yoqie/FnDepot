@@ -9,7 +9,43 @@
   "apps": {
     "1panel": {
       "details_url": "apps/1panel.json",
-      "details_updated_at": "2026-09-03T12:25:44.766Z"
+      "details_updated_at": "2026-09-03T13:59:12.544Z",
+      "display_name": "1Panel",
+      "desc": "开源服务器运维管理面板，提供可视化的 Linux 服务器管理。",
+      "categories": [
+        "系统工具"
+      ],
+      "icon_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/1panel/ICON.PNG",
+      "readme_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/1panel/README.md",
+      "bug_report_url": "https://github.com/yoqie/FnDepot/issues",
+      "maintainer": "",
+      "maintainer_url": "https://github.com/1Panel-dev/1Panel",
+      "distributor": "FnDepot",
+      "distributor_url": "https://github.com/yoqie/FnDepot",
+      "run_as": "root",
+      "install_type": "root",
+      "is_docker": false,
+      "service_port": ""
+    },
+    "nodejs_v24": {
+      "details_url": "apps/nodejs_v24.json",
+      "details_updated_at": "2026-09-03T13:59:12.545Z",
+      "display_name": "Node.js v24",
+      "desc": "Node.js® v24 LTS 运行时，作为 DeepSeek Harness 等应用的运行时依赖。",
+      "categories": [
+        "编程开发"
+      ],
+      "icon_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/nodejs_v24/ICON.PNG",
+      "readme_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/nodejs_v24/README.md",
+      "bug_report_url": "https://github.com/yoqie/FnDepot/issues",
+      "maintainer": "",
+      "maintainer_url": "https://nodejs.org/",
+      "distributor": "FnDepot",
+      "distributor_url": "https://github.com/yoqie/FnDepot",
+      "run_as": "root",
+      "install_type": "root",
+      "is_docker": false,
+      "service_port": ""
     }
   }
 }

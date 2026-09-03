@@ -1,0 +1,64 @@
+#!/usr/bin/env node
+/*
+ * update-index.mjs — 统一聚合源索引：从各 build/<slug>/meta.json + apps/<slug>.json
+ * 生成 fnpack.json 与 README.md。覆盖原生应用（1panel, nodejs_v24, deepseek_harness）
+ * 与 Docker 应用（apps.allowlist.txt）。
+ * 用法： node scripts/update-index.mjs [--repo OWNER/NAME]
+ */
+
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
+
+const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const args = process.argv.slice(2);
+const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 && args[i + 1] ? args[i + 1] : d; };
+const REPO = opt('--repo', process.env.REPO || 'yoqie/FnDepot');
+
+const readJson = async (p, d) => JSON.parse(await fs.readFile(p, 'utf8').catch(() => JSON.stringify(d)));
+const writeJson = (p, o) => fs.writeFile(p, JSON.stringify(o, null, 2) + '\n');
+
+const sourceInfo = await readJson(path.join(ROOT, 'source.json'), {});
+const fnpack = { schema_version: '2', source_info: sourceInfo, apps: {} };
+
+const allowlist = (await fs.readFile(path.join(ROOT, 'apps.allowlist.txt'), 'utf8').catch(() => ''))
+  .split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));
+const nativeSlugs = ['1panel', 'nodejs_v24', 'deepseek_harness'];
+const allSlugs = [...new Set([...nativeSlugs, ...allowlist])];
+
+const rows = [];
+for (const slug of allSlugs) {
+  const meta = await readJson(path.join(ROOT, 'build', slug, 'meta.json'), null);
+  const detail = await readJson(path.join(ROOT, 'apps', slug + '.json'), null);
+  if (!meta) continue;
+  const isDocker = !!meta.is_docker;
+  const desc = meta.desc || '—';
+  rows.push(`| [${meta.displayName || slug}](build/${slug}/) | ${desc} | ${meta.upstream || meta.version || '—'} |`);
+  if (detail && detail.app_name) {
+    fnpack.apps[slug] = {
+      details_url: `apps/${slug}.json`,
+      details_updated_at: detail.updated_at || new Date().toISOString(),
+      display_name: meta.displayName,
+      desc,
+      platform: meta.platform,
+      categories: meta.categories,
+      icon_url: `https://raw.githubusercontent.com/${REPO}/main/assets/${slug}/ICON.PNG`,
+      readme_url: `https://raw.githubusercontent.com/${REPO}/main/assets/${slug}/README.md`,
+      bug_report_url: `https://github.com/${REPO}/issues`,
+      maintainer: meta.maintainer || '',
+      maintainer_url: meta.maintainer_url || `https://github.com/${REPO}`,
+      distributor: sourceInfo.author || 'FnDepot',
+      distributor_url: `https://github.com/${REPO}`,
+      run_as: meta.run_as || (isDocker ? 'package' : 'root'),
+      install_type: meta.install_type || (isDocker ? 'docker' : 'root'),
+      is_docker: isDocker,
+      service_port: meta.service_port || '',
+    };
+  }
+}
+await writeJson(path.join(ROOT, 'fnpack.json'), fnpack);
+await fs.writeFile(path.join(ROOT, 'README.md'),
+  `# FnDepot · 1Panel 跟随源\n\n飞牛 fnOS 个人第三方应用源——由 GitHub Actions 跟随 [1Panel 官方](https://github.com/1Panel-dev/1Panel)、官方 Node.js 与 [DeepSeek Harness](https://github.com/deepseek-ai/dsh) 自动打包更新。\n\n` +
+  `- 源地址（添加到 FnDepot/AppCenter 第三方源）：\`https://github.com/${REPO}\` 或 \`https://raw.githubusercontent.com/${REPO}/main/fnpack.json\`\n` +
+  `- 跟随：1Panel 面板 v2 + Node.js v24 + DeepSeek Harness 官方源 + \`apps.allowlist.txt\` 名单中的应用市场应用\n` +
+  `- 同步频率：每天一次（可手动触发），有新版本时自动打包 FPK 并发布 Release。\n\n## 应用列表\n\n| 应用 | 描述 | 上游版本 |\n|------|------|----------|\n${rows.join('\n')}\n`);
+console.log('index updated, apps:', Object.keys(fnpack.apps).join(', '));

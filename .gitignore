@@ -6,3 +6,9 @@ pending.json
 
 # 同步脚本的工作缓存（已提交的 build/ 是生成结果，这个是临时目录）
 .tmp/
+
+# DSH/Node runtime 构建产物（Action 里 pnpm/npm 现装现打，不进仓库）
+build/deepseek_harness/runtime/
+build/deepseek_harness/node_modules/
+dist/
+*.tgz

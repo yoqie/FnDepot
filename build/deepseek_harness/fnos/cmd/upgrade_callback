@@ -1,0 +1,3 @@
+#!/bin/bash
+"$(dirname "$0")/install_callback" || { echo "runtime verify failed" >> "${TRIM_TEMP}/upgrade.log" 2>/dev/null || true; }
+exit 0

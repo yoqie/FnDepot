@@ -1,0 +1,97 @@
+#!/bin/bash
+# Pure-official DeepSeek Harness launcher (no third-party gateway).
+# Depends on the nodejs_v24 runtime app at /var/apps/nodejs_v24/target/bin.
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+export PATH="/var/apps/nodejs_v24/target/bin:$PATH"
+
+APP_DIR="${TRIM_APPDEST}"
+DATA_DIR="${TRIM_PKGVAR}"
+TMP_DIR="${TRIM_PKGTMP:-/tmp}"
+PORT="${TRIM_SERVICE_PORT:-3080}"
+HOST="${DSH_HOST:-127.0.0.1}"
+RUNTIME_DIR="$APP_DIR/runtime"
+DSH_CLI="${RUNTIME_DIR}/node_modules/@deepseek-ai/dsh/lib/bin.js"
+if [ ! -f "$DSH_CLI" ]; then DSH_CLI="${RUNTIME_DIR}/node_modules/.bin/dsh"; fi
+PIDFILE="$DATA_DIR/deepseek-harness.pid"
+LOGFILE="$DATA_DIR/logs/deepseek-harness.log"
+HOME_DIR="$DATA_DIR/home"
+DSH_HOME_DIR="$DATA_DIR/dsh"
+
+mkdir -p "$DATA_DIR/logs" "$HOME_DIR" "$DSH_HOME_DIR" "$TMP_DIR"
+
+write_error() {
+  if [ -n "${TRIM_TEMP_LOGFILE}" ]; then echo "${1}" > "${TRIM_TEMP_LOGFILE}"; else echo "${1}" >&2; fi
+}
+
+is_running() {
+  [ -f "$PIDFILE" ] || return 1
+  local pid
+  pid=$(cat "$PIDFILE" 2>/dev/null)
+  [ -n "$pid" ] && [ -d "/proc/$pid" ] && return 0
+  rm -f "$PIDFILE"
+  return 1
+}
+
+start_app() {
+  if is_running; then echo "DeepSeek Harness already running" >> "$LOGFILE"; return 0; fi
+  if [ ! -x "$DSH_CLI" ]; then
+    write_error "DSH CLI not found: ${DSH_CLI}"
+    echo "DSH CLI not found: ${DSH_CLI}" >> "$LOGFILE"
+    return 1
+  fi
+  export HOME="$HOME_DIR"
+  export DSH_HOME="$DSH_HOME_DIR"
+  export XDG_CONFIG_HOME="$DATA_DIR/xdg/config"
+  export XDG_DATA_HOME="$DATA_DIR/xdg/data"
+  export XDG_CACHE_HOME="$DATA_DIR/xdg/cache"
+  mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_CACHE_HOME"
+  cd "$DATA_DIR/workspace" 2>/dev/null || cd "$DATA_DIR"
+  echo "Starting DeepSeek Harness on ${HOST}:${PORT} (cli ${DSH_CLI})" >> "$LOGFILE"
+  nohup node "$DSH_CLI" web --host "$HOST" --port "$PORT" --no-open >> "$LOGFILE" 2>&1 &
+  echo $! > "$PIDFILE"
+  sleep 3
+  if ! is_running; then
+    echo "DSH failed to start within 3s, check $LOGFILE" >> "$LOGFILE"
+    return 1
+  fi
+  return 0
+}
+
+stop_app() {
+  if is_running; then
+    local pid
+    pid=$(cat "$PIDFILE")
+    kill "$pid" 2>/dev/null || true
+    for _ in 1 2 3 4 5 6 7 8 9 10; do
+      sleep 1
+      [ -d "/proc/$pid" ] || break
+    done
+    kill -9 "$pid" 2>/dev/null || true
+    rm -f "$PIDFILE"
+  fi
+  pkill -f "$DSH_CLI" 2>/dev/null || true
+  return 0
+}
+
+case "${1}" in
+  start)
+    start_app
+    exit $?
+    ;;
+  stop)
+    stop_app
+    echo "DeepSeek Harness stopped" >> "$LOGFILE"
+    exit 0
+    ;;
+  status)
+    if is_running; then echo "DeepSeek Harness is running"; exit 0; else echo "DeepSeek Harness is not running"; exit 3; fi
+    ;;
+  log)
+    if [ -f "$LOGFILE" ]; then tail -n "${2:-300}" "$LOGFILE"; else echo "no log"; fi
+    exit 0
+    ;;
+  *)
+    exit 1
+    ;;
+esac
