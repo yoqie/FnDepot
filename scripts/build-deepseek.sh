@@ -72,4 +72,9 @@ build_one() {
     > "$OUTDIR/deepseek_harness-$plat.fpk-info.json"
 }
 
-build_one x86
+# BUILD_ARCH=x86|arm|all（默认 x86；arm CI 传 arm 只打 arm 包）
+case "${BUILD_ARCH:-x86}" in
+  arm) build_one arm ;;
+  all) build_one x86; build_one arm ;;
+  *) build_one x86 ;;
+esac

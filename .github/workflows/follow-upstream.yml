@@ -1,6 +1,10 @@
 name: follow-upstream
 
-# 每天自动跟随 1Panel 官方：面板本体（原生双架构 FPK）+ 应用市场名单（Docker 型 FPK）。
+# 每天自动跟随官方源，自动打包 fnOS FPK 并发布：
+# - 1Panel 面板本体（原生双架构，官方 CDN v2）
+# - nodejs_v24 运行时（原生双架构，nodejs.org）
+# - deepseek_harness（原生 x86+arm，npm 官方源）
+# - 应用市场名单（Docker 型，1Panel appstore）
 on:
   schedule:
     - cron: '30 18 * * *' # UTC 18:30 = 北京时间次日 02:30
@@ -10,18 +14,26 @@ permissions:
   contents: write
 
 jobs:
-  follow:
+  sync:
     runs-on: ubuntu-latest
+    outputs:
+      pending: ${{ steps.dump.outputs.pending }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
-      - name: Sync 1Panel panel + appstore list
+      - name: Sync all upstreams
         run: |
           node scripts/sync-1panel.mjs --repo ${{ github.repository }}
+          node scripts/sync-node24.mjs --repo ${{ github.repository }}
+          node scripts/sync-deepsh.mjs --repo ${{ github.repository }}
           node scripts/sync.mjs --repo ${{ github.repository }}
+          node scripts/update-index.mjs --repo ${{ github.repository }}
 
       - name: Validate fnpack skeleton
         run: node -e "
@@ -29,46 +41,150 @@ jobs:
           if(j.schema_version!=='2') throw new Error('schema_version must be \"2\"');
           if(!j.source_info?.name||!j.source_info?.author) throw new Error('source_info incomplete');
           if(typeof j.apps!=='object') throw new Error('apps must be object');
-          console.log('apps indexed:',Object.keys(j.apps).length);
+          console.log('apps indexed:',Object.keys(j.apps).join(', '));
         "
 
-      - name: Build FPKs for pending apps
+      - id: dump
+        name: Dump pending + upload
         run: |
-          chmod +x scripts/build-1panel.sh scripts/build-fpk.sh
-          mkdir -p dist
-          node -e "console.log(require('./pending.json').map(e=>e.slug).join('\n'))" | while read -r slug; do
-            [ -z "$slug" ] && continue
-            if [ "$slug" = "1panel" ]; then
-              ./scripts/build-1panel.sh dist
-            else
-              ./scripts/build-fpk.sh "$slug" dist
-            fi
-          done
+          echo "pending=$(node -e "console.log(require('./pending.json').map(e=>e.slug+':'+e.version).join(','))")" >> "$GITHUB_OUTPUT"
+          cat pending.json || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sync-state
+          path: |
+            pending.json
+            build/1panel/meta.json
+            build/nodejs_v24/meta.json
+            build/deepseek_harness/meta.json
+            build/deepseek_harness/package.json
+            fnpack.json
+            apps/
+            assets/
+            README.md
 
+  build-x86:
+    needs: sync
+    if: needs.sync.outputs.pending != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Build FPKs (x86)
+        run: |
+          chmod +x scripts/build-1panel.sh scripts/build-node24.sh scripts/build-deepseek.sh scripts/build-fpk.sh
+          mkdir -p dist
+          for slug in $(node -e "console.log(require('./pending.json').map(e=>e.slug).join(' '))"); do
+            case "$slug" in
+              1panel) ./scripts/build-1panel.sh dist ;;
+              nodejs_v24) ./scripts/build-node24.sh dist ;;
+              deepseek_harness)
+                # x86 runtime: pnpm install on the x64 runner
+                rm -rf build/deepseek_harness/runtime/node_modules build/deepseek_harness/runtime/pnpm-lock.yaml
+                mkdir -p build/deepseek_harness/runtime
+                cp build/deepseek_harness/package.json build/deepseek_harness/runtime/
+                (cd build/deepseek_harness/runtime && pnpm install --prod --ignore-scripts)
+                ./scripts/build-deepseek.sh dist
+                # build-deepseek.sh currently emits x86 only; arm is built in build-arm
+                ;;
+              *) ./scripts/build-fpk.sh "$slug" dist || true ;;
+            esac
+          done
+          ls -la dist/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fpk-x86
+          path: dist/*
+
+  build-arm:
+    needs: sync
+    if: needs.sync.outputs.pending != ''
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Build FPKs (arm)
+        run: |
+          chmod +x scripts/build-1panel.sh scripts/build-node24.sh scripts/build-deepseek.sh scripts/build-fpk.sh
+          mkdir -p dist-arm
+          for slug in $(node -e "console.log(require('./pending.json').map(e=>e.slug).join(' '))"); do
+            case "$slug" in
+              1panel)
+                # 1panel arm tarball is downloaded upstream; the script builds both arches,
+                # so only keep the arm outputs here to avoid clobbering x86 artifacts.
+                ./scripts/build-1panel.sh dist-arm ;;
+              nodejs_v24) ./scripts/build-node24.sh dist-arm ;;
+              deepseek_harness)
+                rm -rf build/deepseek_harness/runtime/node_modules build/deepseek_harness/runtime/pnpm-lock.yaml
+                mkdir -p build/deepseek_harness/runtime
+                cp build/deepseek_harness/package.json build/deepseek_harness/runtime/
+                (cd build/deepseek_harness/runtime && pnpm install --prod --ignore-scripts)
+                BUILD_ARCH=arm ./scripts/build-deepseek.sh dist-arm
+                ;;
+              *) echo "skip docker $slug on arm runner (built on x86)" ;;
+            esac
+          done
+          ls -la dist-arm/ || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fpk-arm
+          path: dist-arm/*
+
+  release:
+    needs: [sync, build-x86, build-arm]
+    if: needs.sync.outputs.pending != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: fpk-x86
+          path: dist/
+      - uses: actions/download-artifact@v4
+        with:
+          name: fpk-arm
+          path: dist/
+      - uses: actions/download-artifact@v4
+        with:
+          name: sync-state
+          path: state/
       - name: Finalize details + commit + release
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          HAS_FPK=$(ls dist/*.fpk 2>/dev/null | head -1 || true)
-          if [ -n "$HAS_FPK" ]; then
-            # Release 名/tag 用「应用名 + 版本」（如 1panel 1.10.34-lts-1）。
-            # 版本统一取自 build/<slug>/meta.json，多包时取第一个（当前以 1panel 为主）。
-            APP_NAME=$(node -e "const m=require('./build/1panel/meta.json');console.log(m.displayName||'1panel')" 2>/dev/null || echo "app")
-            APP_VER=$(node -e "const m=require('./build/1panel/meta.json');console.log(m.version)" 2>/dev/null || echo "update")
-            TAG="${APP_NAME}-${APP_VER}"
-            echo "TAG=$TAG" >> "$GITHUB_ENV"
-            node scripts/finalize-1panel.mjs --repo ${{ github.repository }} --tag "$TAG" --dist dist || true
-            node scripts/finalize.mjs --repo ${{ github.repository }} --tag "$TAG" --dist dist || true
+          cp state/pending.json pending.json 2>/dev/null || true
+          cp state/fnpack.json fnpack.json 2>/dev/null || true
+          for slug in $(node -e "console.log(require('./pending.json').map(e=>e.slug).join(' '))"); do
+            VER=$(node -e "console.log(require('./pending.json').find(e=>e.slug==='$slug').version)")
+            NAME=$(node -e "const m=require('./build/$slug/meta.json');console.log(m.displayName||'$slug')")
+            TAG="${NAME}-${VER}"
+            case "$slug" in
+              1panel) node scripts/finalize-1panel.mjs --repo ${{ github.repository }} --tag "$TAG" --dist dist || true ;;
+              nodejs_v24) node scripts/finalize-node24.mjs --repo ${{ github.repository }} --tag "$TAG" --dist dist || true ;;
+              deepseek_harness) node scripts/finalize-deepseek.mjs --repo ${{ github.repository }} --tag "$TAG" --dist dist || true ;;
+              *) node scripts/finalize.mjs --repo ${{ github.repository }} --tag "$TAG" --dist dist || true ;;
+            esac
+            node scripts/update-index.mjs --repo ${{ github.repository }} || true
             git add fnpack.json apps/ assets/ build/ shared/ scripts/ README.md LICENSE
-            git commit -m "chore: follow 1Panel $TAG" || true
+            git commit -m "chore: follow ${NAME} ${VER}" || true
             git push
-            gh release create "$TAG" dist/*.fpk \
-              --title "$APP_NAME $APP_VER" \
-              --notes "自动跟随 1Panel 官方打包更新：$APP_NAME $APP_VER。由本源 GitHub Actions 生成。"
-          else
-            git add fnpack.json apps/ build/ shared/ scripts/ README.md pending.json LICENSE || true
-            git diff --cached --quiet || { git commit -m "chore: sync from 1Panel"; git push; }
-            echo "no new versions, nothing to release."
-          fi
+            gh release create "$TAG" dist/${slug}* \
+              --title "$NAME $VER" \
+              --notes "自动跟随官方源打包更新：$NAME $VER。由本源 GitHub Actions 生成。"
+          done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
