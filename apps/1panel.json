@@ -6,12 +6,12 @@
       "updated_at": "2026-09-03T11:21:14.417Z",
       "packages": {
         "x86": {
-          "download_url": "https://github.com/yoqie/FnDepot/releases/download/1panel-1.10.34-lts-1/1panel_1.10.34-lts-1_x86.fpk",
+          "download_url": "https://github.com/yoqie/FnDepot/releases/download/1panel-1.10.34-lts-1-r2/1panel_1.10.34-lts-1_x86.fpk",
           "sha256": "a0806b49dc47b44834a1b9303c14b422a76766e64f25c541b052dfbbbde1e6f9",
           "size": 37463869
         },
         "arm": {
-          "download_url": "https://github.com/yoqie/FnDepot/releases/download/1panel-1.10.34-lts-1/1panel_1.10.34-lts-1_arm.fpk",
+          "download_url": "https://github.com/yoqie/FnDepot/releases/download/1panel-1.10.34-lts-1-r2/1panel_1.10.34-lts-1_arm.fpk",
           "sha256": "4c0075c08ad0341df9c4e713ed78930453a930c53eecb27e8c494c8933fa267f",
           "size": 35226413
         }
