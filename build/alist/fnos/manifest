@@ -1,0 +1,14 @@
+appname         = alist
+version         = 3.64.0
+display_name    = AList
+platform        = all
+maintainer      = 1Panel
+maintainer_url  = https://github.com/1Panel-dev/appstore
+distributor     = FnDepot
+distributor_url = https://github.com/yoqie/FnDepot
+desktop_uidir   = ui
+desktop_applaunchname = AList.Application
+service_port    = 5244
+desc            = 支持多存储的文件列表程序和私人网盘
+source          = thirdparty
+checksum        = 

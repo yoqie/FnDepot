@@ -1,0 +1,17 @@
+services:
+  alist:
+    container_name: alist
+    restart: always
+    ports:
+      - "${TRIM_SERVICE_PORT}:5244"
+      - "5246:5246"
+    volumes:
+      - ${TRIM_PKGVAR:?}/data/data:/opt/alist/data
+      - ${TRIM_PKGVAR:?}/data/mnt:/mnt/data
+    environment:
+      - PUID=0
+      - PGID=0
+      - UMASK=022
+    image: xhofe/alist:v3.64.0
+    labels:  
+      createdBy: "Apps"

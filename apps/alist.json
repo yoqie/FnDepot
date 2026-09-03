@@ -1,0 +1,35 @@
+{
+  "app_name": "alist",
+  "releases": {
+    "3.64.0": {
+      "changelog": "跟随 1Panel 上游 alist 3.64.0 自动打包。",
+      "updated_at": "2026-09-03T08:56:31.032Z",
+      "packages": {
+        "all": {
+          "download_url": "https://github.com/yoqie/FnDepot/releases/download/sync-20260903-init/alist_3.64.0_all.fpk",
+          "sha256": "f4a08547831a5bbf775923bdc95fdef45059b4e7680924535ee98a3054a2c14d",
+          "size": 5406
+        }
+      }
+    }
+  },
+  "display_name": "AList",
+  "desc": "支持多存储的文件列表程序和私人网盘",
+  "platform": [
+    "all"
+  ],
+  "categories": [
+    "系统工具"
+  ],
+  "icon_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/alist/ICON.PNG",
+  "readme_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/alist/README.md",
+  "maintainer": "1Panel",
+  "maintainer_url": "https://github.com/alist-org/alist",
+  "distributor": "FnDepot",
+  "distributor_url": "https://github.com/yoqie/FnDepot",
+  "run_as": "package",
+  "install_type": "",
+  "is_docker": true,
+  "service_port": "5244",
+  "bug_report_url": "https://github.com/yoqie/FnDepot/issues"
+}

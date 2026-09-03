@@ -1,0 +1,10 @@
+# 跟随应用名单：每行一个 1Panel 官方源应用 key（即 1Panel-dev/appstore 中 apps/ 下的目录名）。
+# 以 # 开头的行是注释。只会同步这个名单里的应用——想加新应用就加一行，然后跑一次工作流。
+# 例：alist、openresty、mysql（mysql 有多个大版本目录，同步脚本只跟同一 key 下的最新版本）。
+#
+# 示例（去掉行首 # 即可启用）：
+alist
+# openresty
+# adguardhome
+# vaultwarden
+# navidrome

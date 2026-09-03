@@ -1,0 +1,25 @@
+{
+    "port-config": {
+        "protocol-file": "AList.sc"
+    },
+    "data-share": {
+        "shares": [
+            {
+                "name": "AList",
+                "permission": {
+                    "rw": [
+                        "alist"
+                    ]
+                }
+            }
+        ]
+    },
+    "docker-project": {
+        "projects": [
+            {
+                "name": "alist",
+                "path": "docker"
+            }
+        ]
+    }
+}

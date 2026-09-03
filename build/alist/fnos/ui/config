@@ -1,0 +1,14 @@
+{
+  ".url": {
+    "AList.Application": {
+      "title": "AList",
+      "desc": "支持多存储的文件列表程序和私人网盘",
+      "icon": "images/{0}.png",
+      "type": "url",
+      "port": "5244",
+      "protocol": "http",
+      "url": "/",
+      "allUsers": true
+    }
+  }
+}
