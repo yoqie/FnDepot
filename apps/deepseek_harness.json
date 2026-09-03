@@ -1,0 +1,16 @@
+{
+  "app_name": "deepseek_harness",
+  "releases": {
+    "0.1.1-rc.2": {
+      "changelog": "跟随官方 @deepseek-ai/dsh 0.1.1-rc.2 自动打包（纯官方原生版，无第三方封装）。移除 nodejs_v24 安装依赖，改用系统 PATH 的 Node.js >=24。",
+      "updated_at": "2026-09-03T15:16:34.605Z",
+      "packages": {
+        "x86": {
+          "download_url": "https://github.com/yoqie/FnDepot/releases/download/deepseek_harness-0.1.1-rc.2/deepseek_harness_0.1.1-rc.2_x86.fpk",
+          "sha256": "bc7613710c46c2c66c015d8458d98daf5799efd3366048447ae88efc6be9a6ce",
+          "size": 95252786
+        }
+      }
+    }
+  }
+}

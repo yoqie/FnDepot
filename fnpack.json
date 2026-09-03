@@ -9,7 +9,7 @@
   "apps": {
     "1panel": {
       "details_url": "apps/1panel.json",
-      "details_updated_at": "2026-09-03T13:59:12.544Z",
+      "details_updated_at": "2026-09-03T15:18:56.855Z",
       "display_name": "1Panel",
       "desc": "开源服务器运维管理面板，提供可视化的 Linux 服务器管理。",
       "categories": [
@@ -27,19 +27,20 @@
       "is_docker": false,
       "service_port": ""
     },
-    "nodejs_v24": {
-      "details_url": "apps/nodejs_v24.json",
-      "details_updated_at": "2026-09-03T13:59:12.545Z",
-      "display_name": "Node.js v24",
-      "desc": "Node.js® v24 LTS 运行时，作为 DeepSeek Harness 等应用的运行时依赖。",
+    "deepseek_harness": {
+      "details_url": "apps/deepseek_harness.json",
+      "details_updated_at": "2026-09-03T15:18:56.856Z",
+      "display_name": "DeepSeek Harness",
+      "desc": "DeepSeek Harness 官方原生版：内置完整 DSH 运行时与 Agent 能力，端口 3080。",
       "categories": [
-        "编程开发"
+        "AI赋能",
+        "系统工具"
       ],
-      "icon_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/nodejs_v24/ICON.PNG",
-      "readme_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/nodejs_v24/README.md",
+      "icon_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/deepseek_harness/ICON.PNG",
+      "readme_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/deepseek_harness/README.md",
       "bug_report_url": "https://github.com/yoqie/FnDepot/issues",
       "maintainer": "",
-      "maintainer_url": "https://nodejs.org/",
+      "maintainer_url": "https://github.com/deepseek-ai/dsh",
       "distributor": "FnDepot",
       "distributor_url": "https://github.com/yoqie/FnDepot",
       "run_as": "root",

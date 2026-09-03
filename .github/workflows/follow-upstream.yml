@@ -2,7 +2,6 @@ name: follow-upstream
 
 # 每天自动跟随官方源，自动打包 fnOS FPK 并发布：
 # - 1Panel 面板本体（原生双架构，官方 CDN v2）
-# - nodejs_v24 运行时（原生双架构，nodejs.org）
 # - deepseek_harness（原生 x86+arm，npm 官方源）
 # - 应用市场名单（Docker 型，1Panel appstore）
 on:
@@ -30,7 +29,6 @@ jobs:
       - name: Sync all upstreams
         run: |
           node scripts/sync-1panel.mjs --repo ${{ github.repository }}
-          node scripts/sync-node24.mjs --repo ${{ github.repository }}
           node scripts/sync-deepsh.mjs --repo ${{ github.repository }}
           node scripts/sync.mjs --repo ${{ github.repository }}
           node scripts/update-index.mjs --repo ${{ github.repository }}
@@ -56,7 +54,6 @@ jobs:
           path: |
             pending.json
             build/1panel/meta.json
-            build/nodejs_v24/meta.json
             build/deepseek_harness/meta.json
             build/deepseek_harness/package.json
             fnpack.json
@@ -79,12 +76,11 @@ jobs:
 
       - name: Build FPKs (x86)
         run: |
-          chmod +x scripts/build-1panel.sh scripts/build-node24.sh scripts/build-deepseek.sh scripts/build-fpk.sh
+          chmod +x scripts/build-1panel.sh scripts/build-deepseek.sh scripts/build-fpk.sh
           mkdir -p dist
           for slug in $(node -e "console.log(require('./pending.json').map(e=>e.slug).join(' '))"); do
             case "$slug" in
               1panel) ./scripts/build-1panel.sh dist ;;
-              nodejs_v24) ./scripts/build-node24.sh dist ;;
               deepseek_harness)
                 # x86 runtime: pnpm install on the x64 runner
                 rm -rf build/deepseek_harness/runtime/node_modules build/deepseek_harness/runtime/pnpm-lock.yaml
@@ -119,7 +115,7 @@ jobs:
 
       - name: Build FPKs (arm)
         run: |
-          chmod +x scripts/build-1panel.sh scripts/build-node24.sh scripts/build-deepseek.sh scripts/build-fpk.sh
+          chmod +x scripts/build-1panel.sh scripts/build-deepseek.sh scripts/build-fpk.sh
           mkdir -p dist-arm
           for slug in $(node -e "console.log(require('./pending.json').map(e=>e.slug).join(' '))"); do
             case "$slug" in
@@ -127,7 +123,6 @@ jobs:
                 # 1panel arm tarball is downloaded upstream; the script builds both arches,
                 # so only keep the arm outputs here to avoid clobbering x86 artifacts.
                 ./scripts/build-1panel.sh dist-arm ;;
-              nodejs_v24) ./scripts/build-node24.sh dist-arm ;;
               deepseek_harness)
                 rm -rf build/deepseek_harness/runtime/node_modules build/deepseek_harness/runtime/pnpm-lock.yaml
                 mkdir -p build/deepseek_harness/runtime
@@ -175,7 +170,6 @@ jobs:
             TAG="${NAME}-${VER}"
             case "$slug" in
               1panel) node scripts/finalize-1panel.mjs --repo ${{ github.repository }} --tag "$TAG" --dist dist || true ;;
-              nodejs_v24) node scripts/finalize-node24.mjs --repo ${{ github.repository }} --tag "$TAG" --dist dist || true ;;
               deepseek_harness) node scripts/finalize-deepseek.mjs --repo ${{ github.repository }} --tag "$TAG" --dist dist || true ;;
               *) node scripts/finalize.mjs --repo ${{ github.repository }} --tag "$TAG" --dist dist || true ;;
             esac

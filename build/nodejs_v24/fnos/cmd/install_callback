@@ -1,6 +1,0 @@
-#!/bin/bash
-cd ${TRIM_APPDEST}
-tar -xf node.tar.xz --strip-components=1
-rm node.tar.xz
-
-exit 0
