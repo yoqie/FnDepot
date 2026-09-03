@@ -307,56 +307,6 @@ for (const slug of allowlist) {
 const pending = results.filter((r) => r.status === 'added' || r.status === 'updated')
   .map((r) => ({ slug: r.slug, version: r.version }));
 await writeJson(path.join(ROOT, 'pending.json'), pending);
-
-// 刷新 fnpack.json 索引骨架 + apps 详情元数据（releases 由 finalize 步骤维护）
-const fnpackPath = path.join(ROOT, 'fnpack.json');
-const fnpack = await readJson(fnpackPath, null) || { schema_version: '2', source_info: {}, apps: {} };
-fnpack.schema_version = '2';
-fnpack.source_info = {
-  name: source.name || '1Panel 跟随源', author: source.author || 'FnDepot',
-  homepage: source.homepage || '', description: source.description || '',
-};
-fnpack.apps = fnpack.apps || {};
-await fs.mkdir(path.join(ROOT, 'apps'), { recursive: true });
-const now = new Date().toISOString();
-for (const slug of allowlist) {
-  const m = await readJson(path.join(ROOT, 'build', slug, 'meta.json'), null);
-  if (!m) continue;
-  fnpack.apps[m.appname] = {
-    details_url: `apps/${slug}.json`,
-    details_updated_at: m.updated_at || now,
-  };
-  const detailPath = path.join(ROOT, 'apps', `${slug}.json`);
-  const detail = await readJson(detailPath, null) || { app_name: m.appname, releases: {} };
-  detail.app_name = m.appname;
-  detail.display_name = m.displayName;
-  detail.desc = m.desc;
-  detail.platform = ['x86', 'arm'];
-  detail.categories = m.categories;
-  detail.icon_url = `./${slug}/ICON.PNG`;
-  detail.readme_url = `./${slug}/README.md`;
-  detail.maintainer = '1Panel';
-  detail.maintainer_url = m.maintainer_url;
-  detail.distributor = source.author || 'FnDepot';
-  detail.distributor_url = `https://github.com/${REPO}`;
-  detail.run_as = 'package';
-  detail.install_type = '';
-  detail.is_docker = true;
-  detail.service_port = String(m.defaultPort);
-  detail.releases = detail.releases || {};
-  await writeJson(detailPath, detail);
-}
-await writeJson(fnpackPath, fnpack);
-
-// README 应用表
-const rows = [];
-for (const slug of allowlist) {
-  const m = await readJson(path.join(ROOT, 'build', slug, 'meta.json'), null);
-  rows.push(`| ${m ? `[${m.displayName}](build/${slug}/)` : slug} | ${m ? m.desc : '—'} | ${m ? m.version : '—'} |`);
-}
-const readme = `# FnDepot · 1Panel 跟随源\n\n飞牛 fnOS 个人第三方应用源——由 GitHub Actions 跟随 [1Panel 官方源](https://github.com/1Panel-dev/appstore) 自动打包更新（Docker 型 FPK）。\n\n- 源地址（添加到 FnDepot/AppCenter 第三方源）：` +
-  `\`https://github.com/${REPO}\` 或 \`https://raw.githubusercontent.com/${REPO}/main/fnpack.json\`\n` +
-  `- 跟随名单：\`apps.allowlist.txt\`（每行一个 1Panel 应用 key，只跟同 key 最新版本）\n` +
-  `- 同步频率：每天一次（可手动触发），有新版本时自动打包架构无关的 Docker 型 FPK 并发布 Release。\n\n## 应用列表\n\n| 应用 | 描述 | 上游版本 |\n|------|------|----------|\n${rows.join('\n')}\n`;
-await fs.writeFile(path.join(ROOT, 'README.md'), readme);
+// fnpack.json / README.md 由 sync-1panel.mjs 统一聚合（含 1panel 本体 + 名单应用），
+// 这里不再写入，避免与面板聚合互相覆盖。apps/<slug>.json 由 finalize.mjs 在发版时重建。
 console.log(`done. pending: ${pending.length}`);

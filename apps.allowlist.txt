@@ -3,7 +3,7 @@
 # 例：alist、openresty、mysql（mysql 有多个大版本目录，同步脚本只跟同一 key 下的最新版本）。
 #
 # 示例（去掉行首 # 即可启用）：
-alist
+# alist
 # openresty
 # adguardhome
 # vaultwarden

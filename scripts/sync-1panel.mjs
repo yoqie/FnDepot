@@ -53,16 +53,29 @@ if (prev && prev.fingerprint === fingerprint) {
 
 // ---- 索引骨架 + 详情元数据（releases 由 finalize 维护）----
 const source = await readJson(path.join(ROOT, 'source.json'), {});
+// 唯一聚合器：fnpack.apps / README 同时列 1panel 本体 + allowlist 里的 Docker 应用。
+const allowlist = (await fs.readFile(path.join(ROOT, 'apps.allowlist.txt'), 'utf8'))
+  .split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));
+
 const fnpack = await readJson(path.join(ROOT, 'fnpack.json'), null) || { schema_version: '2', source_info: {}, apps: {} };
 fnpack.schema_version = '2';
 fnpack.source_info = {
   name: source.name || '1Panel 跟随源', author: source.author || 'FnDepot',
   homepage: source.homepage || '', description: source.description || '',
 };
-fnpack.apps = fnpack.apps || {};
 const meta = await readJson(metaPath, null);
+
+// 重建 apps 索引：1panel + 每个 allowlist 应用（读它们已生成的 meta.json）
+const appsIndex = {};
+if (meta) appsIndex['1panel'] = { details_url: 'apps/1panel.json', details_updated_at: meta.updated_at };
+for (const slug of allowlist) {
+  const m = await readJson(path.join(ROOT, 'build', slug, 'meta.json'), null);
+  if (!m) continue;
+  appsIndex[m.appname] = { details_url: `apps/${slug}.json`, details_updated_at: m.updated_at };
+}
+fnpack.apps = appsIndex; // 天然清除已从 allowlist 移除的应用（如 alist）
+
 if (meta) {
-  fnpack.apps['1panel'] = { details_url: 'apps/1panel.json', details_updated_at: meta.updated_at };
   await fs.mkdir(path.join(ROOT, 'apps'), { recursive: true });
   const detailPath = path.join(ROOT, 'apps', '1panel.json');
   const detail = await readJson(detailPath, null) || { app_name: '1panel', releases: {} };
@@ -82,11 +95,9 @@ if (meta) {
 }
 await writeJson(path.join(ROOT, 'fnpack.json'), fnpack);
 
-// README：1panel 放首行，其余 Docker 型应用（apps.allowlist.txt）随后
+// README：1panel 首行，其余 allowlist 应用随后
 const rows = [];
 if (meta) rows.push(`| [1Panel](build/1panel/) | 开源服务器运维管理面板，提供可视化的 Linux 服务器管理。 | ${meta.upstream} |`);
-const allowlist = (await fs.readFile(path.join(ROOT, 'apps.allowlist.txt'), 'utf8'))
-  .split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));
 for (const slug of allowlist) {
   const m = await readJson(path.join(ROOT, 'build', slug, 'meta.json'), null);
   if (!m || m.appname === '1panel') continue;

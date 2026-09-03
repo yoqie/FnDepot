@@ -7,13 +7,9 @@
     "description": "跟随 1Panel 官方应用源自动打包更新的飞牛 fnOS 第三方应用源（Docker 型 FPK）。"
   },
   "apps": {
-    "alist": {
-      "details_url": "apps/alist.json",
-      "details_updated_at": "2026-09-03T08:56:31.033Z"
-    },
     "1panel": {
       "details_url": "apps/1panel.json",
-      "details_updated_at": "2026-09-03T09:28:31.363Z"
+      "details_updated_at": "2026-09-03T09:20:01.503Z"
     }
   }
 }
