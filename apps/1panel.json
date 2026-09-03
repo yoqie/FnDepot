@@ -1,22 +1,6 @@
 {
   "app_name": "1panel",
   "releases": {
-    "1.10.34-lts-1": {
-      "changelog": "跟随 1Panel 官方 v1 LTS 1.10.34-lts 自动打包（原生双架构）。",
-      "updated_at": "2026-09-03T11:21:14.417Z",
-      "packages": {
-        "x86": {
-          "download_url": "https://github.com/yoqie/FnDepot/releases/download/1panel-1.10.34-lts-1-r3/1panel_1.10.34-lts-1_x86.fpk",
-          "sha256": "1eb4798b1272e28532bd4eef97273614a9335f023b5eb8aecb2007fca5334118",
-          "size": 37464051
-        },
-        "arm": {
-          "download_url": "https://github.com/yoqie/FnDepot/releases/download/1panel-1.10.34-lts-1-r3/1panel_1.10.34-lts-1_arm.fpk",
-          "sha256": "9ac5e23ba2922f5f4def98a49a72f834f67040e789608fe469a7c7dad96f997e",
-          "size": 35219626
-        }
-      }
-    },
     "2.2.5-1": {
       "changelog": "跟随 1Panel 官方 v1 LTS 2.2.5 自动打包（原生双架构）。",
       "updated_at": "2026-09-03T12:25:44.745Z",
