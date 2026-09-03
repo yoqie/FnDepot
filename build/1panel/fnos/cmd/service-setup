@@ -31,7 +31,8 @@ SVC_WRITE_PID=y
 # seed_1pctl is idempotent and runs on upgrade as well as install, so an install
 # that predates this packaging is repaired by updating the app.
 seed_1pctl() {
-    # Idempotent: only generate random secrets on first install.
+    # 安装向导值（wizard_entrance/wizard_username/wizard_password 由 fnOS 在安装时注入）优先；
+    # 为空（升级/无向导路径）则回退随机值。已有 CREDENTIALS.txt 时不覆盖。
     local creds="${TRIM_PKGVAR}/CREDENTIALS.txt"
     local username password entrance
     if [ -f "$creds" ]; then
@@ -39,17 +40,17 @@ seed_1pctl() {
         password=$(grep '^password=' "$creds" | cut -d= -f2-)
         entrance=$(grep '^entrance=' "$creds" | cut -d= -f2-)
     else
-        username="admin"
-        password=$(openssl rand -hex 8 2>/dev/null || head -c 8 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c 16)
-        entrance=$(openssl rand -hex 4 2>/dev/null || head -c 4 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c 8)
+        username="${wizard_username:-admin}"
+        password="${wizard_password:-$(openssl rand -hex 8 2>/dev/null || head -c 8 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c 16)}"
+        entrance="${wizard_entrance:-$(openssl rand -hex 4 2>/dev/null || head -c 4 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c 8)}"
         mkdir -p "${TRIM_PKGVAR}"
         umask 077
         cat > "$creds" <<CREDS
-# 1Panel 首次安装生成的默认凭证。登录后请在面板设置中修改并删除本文件。
+# 1Panel 安装时设置的登录凭证。登录后请在面板设置中修改并删除本文件。
 username=$username
 password=$password
 entrance=$entrance
-url=http://<NAS-IP>:${TRIM_SERVICE_PORT:-10086}/$entrance
+url=http://<NAS-IP>:18090/$entrance
 CREDS
     fi
 
@@ -66,7 +67,7 @@ CREDS
 # values into its SQLite DB at ${TRIM_PKGVAR}/db/1Panel.db.
 # Managed by fnos-apps; change settings via the 1panel UI — do not edit here.
 BASE_DIR=${TRIM_PKGVAR}
-ORIGINAL_PORT=${TRIM_SERVICE_PORT:-10086}
+ORIGINAL_PORT=18090
 ORIGINAL_VERSION=${TRIM_APPVERSION:-unknown}
 ORIGINAL_ENTRANCE=$entrance
 ORIGINAL_USERNAME=$username

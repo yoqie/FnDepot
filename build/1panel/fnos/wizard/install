@@ -1,10 +1,38 @@
 [
     {
-        "stepTitle": "安装说明",
+        "stepTitle": "安装 1Panel - 初始化账号密码",
         "items": [
             {
+                "type": "text",
+                "field": "wizard_entrance",
+                "label": "设置安全入口",
+                "initValue": "",
+                "rules": [
+                    { "required": true, "message": "请设置安全入口" }
+                ]
+            },
+            {
+                "type": "text",
+                "field": "wizard_username",
+                "label": "输入用户名",
+                "initValue": "",
+                "rules": [
+                    { "required": true, "message": "请输入用户名" }
+                ]
+            },
+            {
+                "type": "password",
+                "field": "wizard_password",
+                "label": "输入密码",
+                "initValue": "",
+                "rules": [
+                    { "required": true, "message": "请输入密码" },
+                    { "min": 6, "message": "密码长度不能少于6位" }
+                ]
+            },
+            {
                 "type": "tips",
-                "helpText": "1Panel 是开源的 Linux 服务器运维管理面板。<br>首次安装会生成随机管理员账号与安全入口，安装完成后请在应用数据目录的 CREDENTIALS.txt 中查看，登录后请及时修改并删除该文件。"
+                "helpText": "固定服务端口：18090。安装完成后访问 http://NAS-IP:18090/安全入口 登录。"
             }
         ]
     }

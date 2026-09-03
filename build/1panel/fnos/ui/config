@@ -6,7 +6,7 @@
             "desc": "1Panel Server Panel",
             "icon": "images/{0}.png",
             "type": "url",
-            "port": "10086",
+            "port": "18090",
             "protocol": "http",
             "url": "/",
             "allUsers": true

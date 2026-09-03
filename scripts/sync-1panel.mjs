@@ -88,7 +88,7 @@ if (meta) {
     bug_report_url: `https://github.com/${REPO}/issues`,
     maintainer: '1Panel-dev', maintainer_url: 'https://github.com/1Panel-dev/1Panel',
     distributor: source.author || 'FnDepot', distributor_url: `https://github.com/${REPO}`,
-    run_as: 'root', install_type: 'root', is_docker: false, service_port: '10086',
+    run_as: 'root', install_type: 'root', is_docker: false, service_port: '18090',
   });
   detail.releases = detail.releases || {};
   await writeJson(detailPath, detail);
