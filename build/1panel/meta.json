@@ -1,0 +1,14 @@
+{
+  "slug": "1panel",
+  "appname": "1panel",
+  "displayName": "1Panel",
+  "desc": "开源服务器运维管理面板，提供可视化的 Linux 服务器管理。",
+  "version": "1.10.34-lts-1",
+  "upstream": "1.10.34-lts",
+  "categories": [
+    "系统工具"
+  ],
+  "maintainer_url": "https://github.com/1Panel-dev/1Panel",
+  "fingerprint": "3657b25e91d811cb",
+  "updated_at": "2026-09-03T09:20:01.503Z"
+}

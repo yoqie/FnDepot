@@ -1,6 +1,6 @@
 name: follow-upstream
 
-# 每天自动跟随 1Panel 官方源：有新版本就打包架构无关的 Docker 型 FPK 并发版。
+# 每天自动跟随 1Panel 官方：面板本体（原生双架构 FPK）+ 应用市场名单（Docker 型 FPK）。
 on:
   schedule:
     - cron: '30 18 * * *' # UTC 18:30 = 北京时间次日 02:30
@@ -18,8 +18,10 @@ jobs:
         with:
           node-version: 22
 
-      - name: Sync from 1Panel appstore
-        run: node scripts/sync.mjs --repo ${{ github.repository }}
+      - name: Sync 1Panel panel + appstore list
+        run: |
+          node scripts/sync-1panel.mjs --repo ${{ github.repository }}
+          node scripts/sync.mjs --repo ${{ github.repository }}
 
       - name: Validate fnpack skeleton
         run: node -e "
@@ -32,15 +34,16 @@ jobs:
 
       - name: Build FPKs for pending apps
         run: |
-          chmod +x scripts/build-fpk.sh
+          chmod +x scripts/build-1panel.sh scripts/build-fpk.sh
           mkdir -p dist
-          COUNT=$(node -e "console.log(require('./pending.json').length)")
-          echo "pending: $COUNT"
-          if [ "$COUNT" -gt 0 ]; then
-            node -e "require('./pending.json').forEach(e=>console.log(e.slug))" | while read -r slug; do
-              [ -n "$slug" ] && ./scripts/build-fpk.sh "$slug" dist
-            done
-          fi
+          node -e "console.log(require('./pending.json').map(e=>e.slug).join('\n'))" | while read -r slug; do
+            [ -z "$slug" ] && continue
+            if [ "$slug" = "1panel" ]; then
+              ./scripts/build-1panel.sh dist
+            else
+              ./scripts/build-fpk.sh "$slug" dist
+            fi
+          done
 
       - name: Finalize details + commit + release
         run: |
@@ -50,16 +53,17 @@ jobs:
           if [ -n "$HAS_FPK" ]; then
             TAG="sync-$(date +%Y%m%d-%H%M%S)"
             echo "TAG=$TAG" >> "$GITHUB_ENV"
-            node scripts/finalize.mjs --repo ${{ github.repository }} --tag "$TAG" --dist dist
-            git add fnpack.json apps/ assets/ build/ README.md pending.json
+            node scripts/finalize-1panel.mjs --repo ${{ github.repository }} --tag "$TAG" --dist dist || true
+            node scripts/finalize.mjs --repo ${{ github.repository }} --tag "$TAG" --dist dist || true
+            git add fnpack.json apps/ assets/ build/ shared/ scripts/ README.md pending.json LICENSE
             git commit -m "chore: follow 1Panel $TAG" || true
             git push
             gh release create "$TAG" dist/*.fpk \
               --title "跟随更新 $TAG" \
-              --notes "本次自动跟随 1Panel 官方源打包的 Docker 型 FPK，详见 commit 记录。"
+              --notes "本次自动跟随 1Panel 官方打包的 FPK，详见 commit 记录。"
           else
-            git add fnpack.json apps/ build/ README.md pending.json || true
-            git diff --cached --quiet || { git commit -m "chore: sync from 1Panel appstore"; git push; }
+            git add fnpack.json apps/ build/ shared/ scripts/ README.md pending.json LICENSE || true
+            git diff --cached --quiet || { git commit -m "chore: sync from 1Panel"; git push; }
             echo "no new versions, nothing to release."
           fi
         env:

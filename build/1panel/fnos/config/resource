@@ -1,0 +1,19 @@
+{
+    "port-config": {
+        "protocol-file": "1Panel.sc"
+    },
+    "data-share": {
+        "shares": [
+            {
+                "name": "1Panel",
+                "permission": {
+                    "rw": [
+                        "1panel"
+                    ]
+                }
+            }
+        ]
+    },
+    "systemd-unit": {
+    }
+}

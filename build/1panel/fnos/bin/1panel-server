@@ -1,0 +1,11 @@
+#!/bin/sh
+APP_DIR="${TRIM_APPDEST}"
+APP_DATA_DIR=$1
+
+mkdir -p "$APP_DATA_DIR"
+
+cd "$APP_DIR" || exit 1
+# 1panel 二进制不接受 --port/--base-dir 参数，启动时从 /usr/local/bin/1pctl
+# 读取 ORIGINAL_PORT= 与 BASE_DIR=（见上游 core/utils/common/common.go LoadParams），
+# 该文件由 service_preinst（root 身份）预埋，这里直接裸启动即可。
+exec ./1panel

@@ -10,6 +10,10 @@
     "alist": {
       "details_url": "apps/alist.json",
       "details_updated_at": "2026-09-03T08:56:31.033Z"
+    },
+    "1panel": {
+      "details_url": "apps/1panel.json",
+      "details_updated_at": "2026-09-03T09:25:31.356Z"
     }
   }
 }

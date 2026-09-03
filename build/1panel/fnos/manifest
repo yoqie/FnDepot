@@ -1,0 +1,15 @@
+appname         = 1panel
+version         = 0.0.0
+display_name    = 1Panel
+platform        = x86
+maintainer      = 1Panel-dev
+maintainer_url  = https://github.com/1Panel-dev/1Panel
+distributor     = FnDepot
+distributor_url = https://github.com/yoqie/FnDepot
+install_type    = root
+desktop_uidir   = ui
+desktop_applaunchname = 1panel.Application
+service_port    = 10086
+desc            = 开源服务器运维管理面板，提供可视化的 Linux 服务器管理。
+source          = thirdparty
+checksum        =

@@ -1,0 +1,11 @@
+[
+    {
+        "stepTitle": "安装说明",
+        "items": [
+            {
+                "type": "tips",
+                "helpText": "1Panel 是开源的 Linux 服务器运维管理面板。<br>首次安装会生成随机管理员账号与安全入口，安装完成后请在应用数据目录的 CREDENTIALS.txt 中查看，登录后请及时修改并删除该文件。"
+            }
+        ]
+    }
+]

@@ -1,0 +1,15 @@
+{
+    ".url": {
+        "1panel.Application":
+        {
+            "title": "1Panel",
+            "desc": "1Panel Server Panel",
+            "icon": "images/{0}.png",
+            "type": "url",
+            "port": "10086",
+            "protocol": "http",
+            "url": "/",
+            "allUsers": true
+        }
+    }
+}
