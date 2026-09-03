@@ -16,6 +16,22 @@
           "size": 35219626
         }
       }
+    },
+    "2.2.5-1": {
+      "changelog": "跟随 1Panel 官方 v1 LTS 2.2.5 自动打包（原生双架构）。",
+      "updated_at": "2026-09-03T12:25:44.745Z",
+      "packages": {
+        "x86": {
+          "download_url": "https://github.com/yoqie/FnDepot/releases/download/1panel-2.2.5-1/1panel_2.2.5-1_x86.fpk",
+          "sha256": "7d9325a997a0485f8033e2d57164ecc7d2733fa4511837c738619ebc1bd5c241",
+          "size": 61092843
+        },
+        "arm": {
+          "download_url": "https://github.com/yoqie/FnDepot/releases/download/1panel-2.2.5-1/1panel_2.2.5-1_arm.fpk",
+          "sha256": "122fa4293112793f10e8143c2a42aac16a085c88b43e711b089cd46c2f694f6f",
+          "size": 56971019
+        }
+      }
     }
   },
   "display_name": "1Panel",

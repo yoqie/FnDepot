@@ -1,11 +1,13 @@
 #!/bin/sh
+# v2: 1panel-core（主服务，监听端口）+ 1panel-agent（节点代理）双进程。
+# 两者都从 /usr/local/bin/1pctl 读取 BASE_DIR=/ORIGINAL_PORT= 等启动参数
+# （该文件由 service_preinst 预埋），这里直接裸启动。
 APP_DIR="${TRIM_APPDEST}"
 APP_DATA_DIR=$1
 
 mkdir -p "$APP_DATA_DIR"
 
 cd "$APP_DIR" || exit 1
-# 1panel 二进制不接受 --port/--base-dir 参数，启动时从 /usr/local/bin/1pctl
-# 读取 ORIGINAL_PORT= 与 BASE_DIR=（见上游 core/utils/common/common.go LoadParams），
-# 该文件由 service_preinst（root 身份）预埋，这里直接裸启动即可。
-exec ./1panel
+./1panel-core &
+./1panel-agent &
+wait

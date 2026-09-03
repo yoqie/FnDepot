@@ -6,7 +6,8 @@ PID_FILE="${TRIM_PKGVAR}/${TRIM_APPNAME}.pid"
 APP_DIR="${TRIM_APPDEST}"
 APP_DATA_DIR="${TRIM_PKGVAR}"
 
-SERVICE_COMMAND="$APP_DIR/bin/1panel-server $APP_DATA_DIR"
+SERVICE_COMMAND="$APP_DIR/1panel-core
+$APP_DIR/1panel-agent"
 SVC_BACKGROUND=y
 SVC_WRITE_PID=y
 
@@ -62,9 +63,8 @@ CREDS
     fi
     cat > /usr/local/bin/1pctl <<EOF
 #!/bin/bash
-# Stub config-source for 1panel. The real 1pctl is the upstream management CLI;
-# the daemon only greps these KEY=VALUE lines at first boot, then migrates
-# values into its SQLite DB at ${TRIM_PKGVAR}/db/1Panel.db.
+# Stub config-source for 1panel. The daemon greps these KEY=VALUE lines at first
+# boot, then migrates values into its SQLite DB at ${TRIM_PKGVAR}/1panel/db/1Panel.db.
 # Managed by fnos-apps; change settings via the 1panel UI — do not edit here.
 BASE_DIR=${TRIM_PKGVAR}
 ORIGINAL_PORT=18090
@@ -77,6 +77,19 @@ PANEL_EDITION=cn
 CHANGE_USER_INFO=false
 EOF
     chmod 755 /usr/local/bin/1pctl 2>/dev/null || true
+
+    # v2 core 期望地理库位于 $BASE_DIR/1panel/geo/，语言资源位于 /usr/local/bin/lang/
+    # （/usr/local/bin/1pctl 会 source /usr/local/bin/lang/$LANGUAGE.sh）。
+    # 这些资源随包分发在 ${APP_DIR} 下，这里做首次部署。
+    if [ -f "${APP_DIR}/GeoIP.mmdb" ]; then
+        mkdir -p "${TRIM_PKGVAR}/1panel/geo"
+        cp -f "${APP_DIR}/GeoIP.mmdb" "${TRIM_PKGVAR}/1panel/geo/GeoIP.mmdb" 2>/dev/null || true
+    fi
+    if [ -d "${APP_DIR}/lang" ]; then
+        mkdir -p /usr/local/bin/lang
+        cp -f "${APP_DIR}"/lang/*.sh /usr/local/bin/lang/ 2>/dev/null || true
+        chmod 755 /usr/local/bin/lang/*.sh 2>/dev/null || true
+    fi
 }
 
 service_preinst() {
@@ -93,14 +106,19 @@ service_preuninst() {
     # Clean up the 1pctl stub we created (runs as root).
     rm -f /usr/local/bin/1pctl
 
-    # 使用 -x 精确匹配进程名，避免误杀 appcenter-cli 等包含 "1panel" 参数的进程
-    pkill -x "1panel" 2>/dev/null || true
+    # v2 双进程：core + agent 都要停。用 -x 精确匹配进程名，
+    # 避免误杀 appcenter-cli 等包含 "1panel" 参数的进程
+    pkill -x "1panel-core" 2>/dev/null || true
+    pkill -x "1panel-agent" 2>/dev/null || true
     sleep 1
-    pkill -9 -x "1panel" 2>/dev/null || true
+    pkill -9 -x "1panel-core" 2>/dev/null || true
+    pkill -9 -x "1panel-agent" 2>/dev/null || true
 }
 
 service_poststop() {
-    pkill -x "1panel" 2>/dev/null || true
+    pkill -x "1panel-core" 2>/dev/null || true
+    pkill -x "1panel-agent" 2>/dev/null || true
     sleep 1
-    pkill -9 -x "1panel" 2>/dev/null || true
+    pkill -9 -x "1panel-core" 2>/dev/null || true
+    pkill -9 -x "1panel-agent" 2>/dev/null || true
 }

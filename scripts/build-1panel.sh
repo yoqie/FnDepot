@@ -31,10 +31,11 @@ build_one() {
   echo "==> 1panel $UPSTREAM for $arch"
   local dl="$WORK/dl-$arch"
   mkdir -p "$dl" && cd "$dl"
+  # v2 包路径：.../v2/stable/vX/.../1panel-vX-linux-<arch>.tar.gz（解压后目录名 1panel-<version>-linux-<arch>）
   UPSTREAM="$UPSTREAM" DEB_ARCH="$deb_arch" node -e "
     (async()=>{
       const fs=require('fs');
-      const u='https://resource.1panel.pro/stable/v'+process.env.UPSTREAM+'/release/1panel-v'+process.env.UPSTREAM+'-linux-'+process.env.DEB_ARCH+'.tar.gz';
+      const u='https://resource.1panel.pro/v2/stable/v'+process.env.UPSTREAM+'/release/1panel-v'+process.env.UPSTREAM+'-linux-'+process.env.DEB_ARCH+'.tar.gz';
       const r=await fetch(u,{headers:{'User-Agent':'Mozilla/5.0'}});
       if(!r.ok) throw new Error('download '+r.status+' '+u);
       const ws=fs.createWriteStream('1panel.tar.gz');
@@ -42,19 +43,25 @@ build_one() {
       ws.end(); await new Promise(res=>ws.on('finish',res));
     })().catch(e=>{console.error(e.message);process.exit(1)});
   "
-  # 上游二进制包必须够大（v1.10 约 47MB），太小说明下载坏了
+  # 上游二进制包必须够大（v2.2 约 62MB），太小说明下载坏了
   local size
   size=$(stat -c%s 1panel.tar.gz)
   [ "$size" -ge 10485760 ] || { echo "tarball too small ($size bytes), abort" >&2; exit 1; }
   tar -xzf 1panel.tar.gz
-  local bin
-  bin=$(find . -name "1panel" -type f | head -1)
-  [ -n "$bin" ] || { echo "1panel binary not found in tarball" >&2; exit 1; }
+  local src
+  src=$(find . -maxdepth 1 -type d -name "1panel-*" | head -1)
+  [ -n "$src" ] || { echo "1panel source dir not found in tarball" >&2; exit 1; }
+  # v2：1panel-core（主） + 1panel-agent（代理） 双二进制，并带 GeoIP 与语言资源
+  [ -f "$src/1panel-core" ] || { echo "1panel-core not found in $src" >&2; exit 1; }
+  [ -f "$src/1panel-agent" ] || { echo "1panel-agent not found in $src" >&2; exit 1; }
 
-  # app.tgz：二进制 + 启动器 + ui
+  # app.tgz：双二进制 + 地理库 + 语言资源 + 启动器 + ui
   local root="$WORK/app_root-$arch"
   rm -rf "$root" && mkdir -p "$root/bin" "$root/ui"
-  cp "$bin" "$root/1panel" && chmod +x "$root/1panel"
+  cp "$src/1panel-core" "$root/1panel-core" && chmod +x "$root/1panel-core"
+  cp "$src/1panel-agent" "$root/1panel-agent" && chmod +x "$root/1panel-agent"
+  [ -f "$src/GeoIP.mmdb" ] && cp "$src/GeoIP.mmdb" "$root/GeoIP.mmdb"
+  [ -d "$src/lang" ] && cp -a "$src/lang" "$root/lang"
   cp "$FNOS/bin/1panel-server" "$root/bin/1panel-server" && chmod +x "$root/bin/1panel-server"
   cp -a "$FNOS/ui/." "$root/ui/" 2>/dev/null || true
   (cd "$root" && tar -czf "$WORK/app-$arch.tgz" .)

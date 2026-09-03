@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 /*
- * sync-1panel.mjs — 跟随 1Panel 面板本体（官方 CDN v1 LTS），为双架构生成
+ * sync-1panel.mjs — 跟随 1Panel 面板本体（官方 CDN，当前 v2 系列），为双架构生成
  * fnOS 原生 FPK 工程，并刷新 fnpack.json / apps/1panel.json / README.md。
  *
  * 用法： node scripts/sync-1panel.mjs [--repo OWNER/NAME]
- * 版本来源：https://resource.1panel.pro/stable/latest（v1 LTS，如 v1.10.34-lts），
- *           v2 已拆分 agent+core 二进制布局，与本打包不兼容，暂不跟。
+ * 版本来源：https://resource.1panel.pro/v2/stable/latest（如 v2.2.5）。
  * 新版本出现时把 {slug:'1panel',version} 写入 pending.json（工作流据此打包发版）。
  */
 
@@ -24,7 +23,7 @@ const REPO = opt('--repo', process.env.REPO || 'yoqie/FnDepot');
 const readJson = async (p, d) => JSON.parse(await fs.readFile(p, 'utf8').catch(() => JSON.stringify(d)));
 const writeJson = (p, o) => fs.writeFile(p, JSON.stringify(o, null, 2) + '\n');
 
-const r = await fetch('https://resource.1panel.pro/stable/latest', { headers: { 'User-Agent': 'fnpanel-sync' } });
+const r = await fetch('https://resource.1panel.pro/v2/stable/latest', { headers: { 'User-Agent': 'fnpanel-sync' } });
 const latest = ((await r.text()).trim().replace(/^v/, '')) || '';
 if (!latest) throw new Error('cannot resolve 1panel latest version');
 console.log('upstream latest:', latest);
@@ -106,6 +105,6 @@ for (const slug of allowlist) {
 await fs.writeFile(path.join(ROOT, 'README.md'),
   `# FnDepot · 1Panel 跟随源\n\n飞牛 fnOS 个人第三方应用源——由 GitHub Actions 跟随 [1Panel 官方](https://github.com/1Panel-dev/1Panel) 自动打包更新（面板本体为原生 FPK，其余为 Docker 型 FPK）。\n\n` +
   `- 源地址（添加到 FnDepot/AppCenter 第三方源）：\`https://github.com/${REPO}\` 或 \`https://raw.githubusercontent.com/${REPO}/main/fnpack.json\`\n` +
-  `- 跟随：1Panel 面板本体（v1 LTS，官方 CDN）+ \`apps.allowlist.txt\` 名单中的应用市场应用\n` +
+  `- 跟随：1Panel 面板本体（v2 系列，官方 CDN）+ \`apps.allowlist.txt\` 名单中的应用市场应用\n` +
   `- 同步频率：每天一次（可手动触发），有新版本时自动打包 FPK 并发布 Release。\n\n## 应用列表\n\n| 应用 | 描述 | 上游版本 |\n|------|------|----------|\n${rows.join('\n')}\n`);
 console.log('done.');
