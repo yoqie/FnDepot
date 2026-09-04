@@ -9,7 +9,7 @@
   "apps": {
     "1panel": {
       "details_url": "apps/1panel.json",
-      "details_updated_at": "2026-09-04T00:46:24.454Z",
+      "details_updated_at": "2026-09-04T01:24:00.835Z",
       "display_name": "1Panel",
       "desc": "开源服务器运维管理面板，提供可视化的 Linux 服务器管理。",
       "platform": [
@@ -19,8 +19,8 @@
       "categories": [
         "系统工具"
       ],
-      "icon_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/1panel/ICON.PNG",
-      "readme_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/1panel/README.md",
+      "icon_url": "https://cdn.jsdelivr.net/gh/yoqie/FnDepot@main/assets/1panel/ICON.PNG",
+      "readme_url": "https://cdn.jsdelivr.net/gh/yoqie/FnDepot@main/assets/1panel/README.md",
       "bug_report_url": "https://github.com/yoqie/FnDepot/issues",
       "maintainer": "1Panel-dev",
       "maintainer_url": "https://github.com/1Panel-dev/1Panel",
@@ -33,7 +33,7 @@
     },
     "deepseek_harness": {
       "details_url": "apps/deepseek_harness.json",
-      "details_updated_at": "2026-09-04T00:46:24.455Z",
+      "details_updated_at": "2026-09-04T01:24:00.836Z",
       "display_name": "DeepSeek Harness",
       "desc": "DeepSeek Harness 官方原生版：内置完整 DSH 运行时与 Agent 能力。",
       "platform": [
@@ -43,8 +43,8 @@
         "AI赋能",
         "系统工具"
       ],
-      "icon_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/deepseek_harness/ICON.PNG",
-      "readme_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/deepseek_harness/README.md",
+      "icon_url": "https://cdn.jsdelivr.net/gh/yoqie/FnDepot@main/assets/deepseek_harness/ICON.PNG",
+      "readme_url": "https://cdn.jsdelivr.net/gh/yoqie/FnDepot@main/assets/deepseek_harness/README.md",
       "bug_report_url": "https://github.com/yoqie/FnDepot/issues",
       "maintainer": "",
       "maintainer_url": "https://github.com/deepseek-ai/dsh",

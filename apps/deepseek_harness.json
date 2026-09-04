@@ -9,8 +9,8 @@
     "AI赋能",
     "系统工具"
   ],
-  "icon_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/deepseek_harness/ICON.PNG",
-  "readme_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/deepseek_harness/README.md",
+  "icon_url": "https://cdn.jsdelivr.net/gh/yoqie/FnDepot@main/assets/deepseek_harness/ICON.PNG",
+  "readme_url": "https://cdn.jsdelivr.net/gh/yoqie/FnDepot@main/assets/deepseek_harness/README.md",
   "bug_report_url": "https://github.com/yoqie/FnDepot/issues",
   "maintainer": "",
   "maintainer_url": "https://github.com/deepseek-ai/dsh",
