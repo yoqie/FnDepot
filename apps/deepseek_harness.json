@@ -21,6 +21,17 @@
   "is_docker": false,
   "service_port": "3080",
   "releases": {
+    "0.1.2-rc.1": {
+      "changelog": "跟随官方 @deepseek-ai/dsh 0.1.2-rc.1（next 通道）。官方从本版本起启用内置 Web 鉴权：启动后访问需使用终端日志中的 token/magic URL，见 cmd/main 日志。",
+      "updated_at": "2026-09-04T02:35:00.000Z",
+      "packages": {
+        "x86": {
+          "download_url": "https://github.com/yoqie/FnDepot/releases/download/deepseek_harness-0.1.2-rc.1/deepseek_harness_0.1.2-rc.1_x86.fpk",
+          "sha256": "f48e1841768be77b85f6c1e64320ba5be7f2dffb9d86b2f675d8d87e78f49781",
+          "size": 102012036
+        }
+      }
+    },
     "0.1.1-rc.2": {
       "changelog": "跟随官方 @deepseek-ai/dsh 0.1.1-rc.2 自动打包（纯官方原生版，无第三方封装）。移除 nodejs_v24 安装依赖，改用系统 PATH 的 Node.js >=24。",
       "updated_at": "2026-09-03T15:16:34.605Z",

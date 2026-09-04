@@ -9,7 +9,7 @@
   "apps": {
     "1panel": {
       "details_url": "apps/1panel.json",
-      "details_updated_at": "2026-09-04T01:57:45.985Z",
+      "details_updated_at": "2026-09-04T02:33:31.277Z",
       "display_name": "1Panel",
       "desc": "开源服务器运维管理面板，提供可视化的 Linux 服务器管理。",
       "platform": [
@@ -33,7 +33,7 @@
     },
     "deepseek_harness": {
       "details_url": "apps/deepseek_harness.json",
-      "details_updated_at": "2026-09-04T01:57:45.987Z",
+      "details_updated_at": "2026-09-04T02:33:31.278Z",
       "display_name": "DeepSeek Harness",
       "desc": "DeepSeek Harness 官方原生版：内置完整 DSH 运行时与 Agent 能力。",
       "platform": [

@@ -11,4 +11,4 @@
 | 应用 | 描述 | 上游版本 |
 |------|------|----------|
 | [1Panel](build/1panel/) | 开源服务器运维管理面板，提供可视化的 Linux 服务器管理。 | 2.2.5 |
-| [DeepSeek Harness](build/deepseek_harness/) | DeepSeek Harness 官方原生版：内置完整 DSH 运行时与 Agent 能力，端口 3080。 | 0.1.1-rc.2 |
+| [DeepSeek Harness](build/deepseek_harness/) | DeepSeek Harness 官方原生版：内置完整 DSH 运行时与 Agent 能力，端口 3080。 | 0.1.2-rc.1 |

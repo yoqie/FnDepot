@@ -13,11 +13,21 @@ const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
 const readJson = async (p, d) => JSON.parse(await fs.readFile(p, 'utf8').catch(() => JSON.stringify(d)));
 const writeJson = (p, o) => fs.writeFile(p, JSON.stringify(o, null, 2) + '\n');
 
-// latest dist-tag from npm
+// Track latest stable AND next (pre-release) dist-tags from npm.
+// Follow whichever has the higher version number, so a newer rc from the next
+// channel is picked up without ever dropping back below it.
 const info = await (await fetch('https://registry.npmjs.org/@deepseek-ai/dsh', { headers: { 'User-Agent': 'fnpanel-sync' } })).json();
-const latest = info['dist-tags']?.latest || '';
+const tags = info['dist-tags'] || {};
+const candidates = [tags.latest, tags.next].filter(Boolean);
+const latest = candidates.sort((a, b) => versionNum(b) - versionNum(a))[0];
 if (!latest) throw new Error('cannot resolve @deepseek-ai/dsh latest version');
-console.log('upstream latest:', latest);
+console.log('upstream channels: latest=' + (tags.latest || '') + ' next=' + (tags.next || '') + ' -> tracking ' + latest);
+
+// Compare by leading numeric triple; ignore pre-release suffix for cross-minor picks.
+function versionNum(v) {
+  const nums = String(v).replace(/^v/, '').split(/[.+-]/).map(Number);
+  return (nums[0] || 0) * 10000 + (nums[1] || 0) * 100 + (nums[2] || 0);
+}
 
 const dir = path.join(ROOT, 'build', 'deepseek_harness');
 const metaPath = path.join(dir, 'meta.json');

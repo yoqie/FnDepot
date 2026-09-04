@@ -3,13 +3,13 @@
   "appname": "deepseek_harness",
   "displayName": "DeepSeek Harness",
   "desc": "DeepSeek Harness 官方原生版：内置完整 DSH 运行时与 Agent 能力，端口 3080。",
-  "version": "0.1.1-rc.2",
-  "upstream": "0.1.1-rc.2",
+  "version": "0.1.2-rc.1",
+  "upstream": "0.1.2-rc.1",
   "categories": [
     "AI赋能",
     "系统工具"
   ],
   "maintainer_url": "https://github.com/deepseek-ai/dsh",
-  "fingerprint": "36206b659337fec2",
-  "updated_at": "2026-09-03T13:24:57.666Z"
+  "fingerprint": "f5c3fca79875b067",
+  "updated_at": "2026-09-04T02:30:13.779Z"
 }
