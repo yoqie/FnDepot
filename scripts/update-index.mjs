@@ -34,24 +34,28 @@ for (const slug of allSlugs) {
   const desc = meta.desc || '—';
   rows.push(`| [${meta.displayName || slug}](build/${slug}/) | ${desc} | ${meta.upstream || meta.version || '—'} |`);
   if (detail && detail.app_name) {
+    // 平台从发布包推导（所有 release 的 packages 键并集），避免 metric 未定义
+    const platforms = [...new Set(
+      Object.values(detail.releases || {}).flatMap((r) => Object.keys(r.packages || {}))
+    )].sort();
     fnpack.apps[slug] = {
       details_url: `apps/${slug}.json`,
       details_updated_at: detail.updated_at || new Date().toISOString(),
-      display_name: meta.displayName,
-      desc,
-      platform: meta.platform,
-      categories: meta.categories,
+      display_name: detail.display_name || meta.displayName,
+      desc: detail.desc || desc,
+      platform: platforms.length ? platforms : (isDocker ? ['all'] : ['x86', 'arm']),
+      categories: detail.categories || meta.categories || [],
       icon_url: `https://raw.githubusercontent.com/${REPO}/main/assets/${slug}/ICON.PNG`,
       readme_url: `https://raw.githubusercontent.com/${REPO}/main/assets/${slug}/README.md`,
       bug_report_url: `https://github.com/${REPO}/issues`,
-      maintainer: meta.maintainer || '',
-      maintainer_url: meta.maintainer_url || `https://github.com/${REPO}`,
+      maintainer: detail.maintainer || meta.maintainer || '',
+      maintainer_url: detail.maintainer_url || meta.maintainer_url || `https://github.com/${REPO}`,
       distributor: sourceInfo.author || 'FnDepot',
       distributor_url: `https://github.com/${REPO}`,
-      run_as: meta.run_as || (isDocker ? 'package' : 'root'),
-      install_type: meta.install_type || (isDocker ? 'docker' : 'root'),
+      run_as: detail.run_as || meta.run_as || (isDocker ? 'package' : 'root'),
+      install_type: detail.install_type || meta.install_type || (isDocker ? 'docker' : 'root'),
       is_docker: isDocker,
-      service_port: meta.service_port || '',
+      service_port: detail.service_port || meta.service_port || '',
     };
   }
 }

@@ -9,29 +9,36 @@
   "apps": {
     "1panel": {
       "details_url": "apps/1panel.json",
-      "details_updated_at": "2026-09-03T15:18:56.855Z",
+      "details_updated_at": "2026-09-04T00:46:24.454Z",
       "display_name": "1Panel",
       "desc": "开源服务器运维管理面板，提供可视化的 Linux 服务器管理。",
+      "platform": [
+        "arm",
+        "x86"
+      ],
       "categories": [
         "系统工具"
       ],
       "icon_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/1panel/ICON.PNG",
       "readme_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/1panel/README.md",
       "bug_report_url": "https://github.com/yoqie/FnDepot/issues",
-      "maintainer": "",
+      "maintainer": "1Panel-dev",
       "maintainer_url": "https://github.com/1Panel-dev/1Panel",
       "distributor": "FnDepot",
       "distributor_url": "https://github.com/yoqie/FnDepot",
       "run_as": "root",
       "install_type": "root",
       "is_docker": false,
-      "service_port": ""
+      "service_port": "18090"
     },
     "deepseek_harness": {
       "details_url": "apps/deepseek_harness.json",
-      "details_updated_at": "2026-09-03T15:18:56.856Z",
+      "details_updated_at": "2026-09-04T00:46:24.455Z",
       "display_name": "DeepSeek Harness",
-      "desc": "DeepSeek Harness 官方原生版：内置完整 DSH 运行时与 Agent 能力，端口 3080。",
+      "desc": "DeepSeek Harness 官方原生版：内置完整 DSH 运行时与 Agent 能力。",
+      "platform": [
+        "x86"
+      ],
       "categories": [
         "AI赋能",
         "系统工具"
@@ -46,7 +53,7 @@
       "run_as": "root",
       "install_type": "root",
       "is_docker": false,
-      "service_port": ""
+      "service_port": "3080"
     }
   }
 }
