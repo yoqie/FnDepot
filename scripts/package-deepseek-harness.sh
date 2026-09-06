@@ -22,6 +22,8 @@ sed -i "s/^version.*/version               = ${VERSION}/" "${PKG}/manifest"
 sed -i "s/^platform.*/platform              = ${MANIFEST_ARCH}/" "${PKG}/manifest"
 rm -rf "${PKG}/ui"
 cp -a "${PKG}/app/ui" "${PKG}/ui"
+find "${PKG}/cmd" -maxdepth 1 -type f -exec chmod 755 {} +
+chmod 755 "${PKG}/app/bin/runner.js"
 
 mkdir -p "${ROOT}/dist"
 FPK="${ROOT}/dist/deepseek-harness_${VERSION}_${ARCH}.fpk"
