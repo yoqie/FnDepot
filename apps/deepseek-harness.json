@@ -20,11 +20,15 @@
       "packages": {
         "arm": {
           "version": "0.1.2-rc.1",
-          "download_url": "https://github.com/yoqie/FnDepot/releases/download/deepseek-harness-0.1.2-rc.1/deepseek-harness_0.1.2-rc.1_arm.fpk"
+          "download_url": "https://github.com/yoqie/FnDepot/releases/download/deepseek-harness-0.1.2-rc.1/deepseek-harness_0.1.2-rc.1_arm.fpk",
+          "sha256": "f0347718d6334d9c46f492d46d642520a760715a1de9c519bb8b95ea73408a12",
+          "size": 103640568
         },
         "x86": {
           "version": "0.1.2-rc.1",
-          "download_url": "https://github.com/yoqie/FnDepot/releases/download/deepseek-harness-0.1.2-rc.1/deepseek-harness_0.1.2-rc.1_x86.fpk"
+          "download_url": "https://github.com/yoqie/FnDepot/releases/download/deepseek-harness-0.1.2-rc.1/deepseek-harness_0.1.2-rc.1_x86.fpk",
+          "sha256": "0d0396f02d05ad5870cafe98259d7b4e489e59458a2aa24f761480bdc817eecb",
+          "size": 104601824
         }
       }
     }

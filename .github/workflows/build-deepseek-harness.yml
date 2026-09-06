@@ -100,7 +100,13 @@ jobs:
           done
       - name: Update source index
         run: |
-          node scripts/finalize-deepseek-harness.mjs "${{ github.repository }}" "${{ needs.build.outputs.version }}"
+          archs=$(find "${{ runner.temp }}/fpk-artifacts" -name '*.fpk' | sed -E 's/.*_(arm|x86)\.fpk/\1/' | sort -u)
+          for arch in $archs; do
+            file=$(find "${{ runner.temp }}/fpk-artifacts" -name "*_${arch}.fpk" | head -n1)
+            sha=$(sha256sum "$file" | cut -d' ' -f1)
+            size=$(stat -c%s "$file")
+            node scripts/finalize-deepseek-harness.mjs "${{ github.repository }}" "${{ needs.build.outputs.version }}" "$arch" "$sha" "$size"
+          done
           node scripts/update-index.mjs --repo "${{ github.repository }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
