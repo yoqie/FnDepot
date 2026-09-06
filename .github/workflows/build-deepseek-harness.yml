@@ -87,6 +87,17 @@ jobs:
         with:
           path: ${{ runner.temp }}/fpk-artifacts
       - uses: actions/checkout@v4
+      - name: Remove previous DeepSeek Harness releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          current="deepseek-harness-${{ needs.build.outputs.version }}"
+          gh release list --repo "${{ github.repository }}" --limit 100 --json tagName \
+            --jq '.[].tagName' | while read -r tag; do
+            if [[ "${tag}" == deepseek-harness-* && "${tag}" != "${current}" ]]; then
+              gh release delete "${tag}" --repo "${{ github.repository }}" --yes --cleanup-tag
+            fi
+          done
       - name: Update source index
         run: |
           node scripts/finalize-deepseek-harness.mjs "${{ github.repository }}" "${{ needs.build.outputs.version }}"
