@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 /*
  * update-index.mjs — 统一聚合源索引：从各 build/<slug>/meta.json + apps/<slug>.json
- * 生成 fnpack.json 与 README.md。覆盖原生应用（1panel, deepseek_harness）
- * 与 Docker 应用（apps.allowlist.txt）。
+ * 生成 fnpack.json 与 README.md。覆盖原生应用（1panel）
+ * 与应用市场名单应用（apps.allowlist.txt）。
  * 用法： node scripts/update-index.mjs [--repo OWNER/NAME]
  */
 
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 && args[i + 1] ? args[i + 1] : d; };
 const REPO = opt('--repo', process.env.REPO || 'yoqie/FnDepot');
@@ -22,7 +23,7 @@ const fnpack = { schema_version: '2', source_info: sourceInfo, apps: {} };
 
 const allowlist = (await fs.readFile(path.join(ROOT, 'apps.allowlist.txt'), 'utf8').catch(() => ''))
   .split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));
-const nativeSlugs = ['1panel', 'deepseek_harness'];
+const nativeSlugs = ['1panel', 'deepseek-harness'];
 const allSlugs = [...new Set([...nativeSlugs, ...allowlist])];
 
 const rows = [];
@@ -61,8 +62,8 @@ for (const slug of allSlugs) {
 }
 await writeJson(path.join(ROOT, 'fnpack.json'), fnpack);
 await fs.writeFile(path.join(ROOT, 'README.md'),
-  `# FnDepot · 1Panel 跟随源\n\n飞牛 fnOS 个人第三方应用源——由 GitHub Actions 跟随 [1Panel 官方](https://github.com/1Panel-dev/1Panel)、官方 Node.js 与 [DeepSeek Harness](https://github.com/deepseek-ai/dsh) 自动打包更新。\n\n` +
+  `# FnDepot · 1Panel 跟随源\n\n飞牛 fnOS 个人第三方应用源——由 GitHub Actions 跟随 [1Panel 官方](https://github.com/1Panel-dev/1Panel)、官方 Node.js 与 \`apps.allowlist.txt\` 名单中的应用市场应用自动打包更新。\n\n` +
   `- 源地址（添加到 FnDepot/AppCenter 第三方源）：\`https://github.com/${REPO}\` 或 \`https://raw.githubusercontent.com/${REPO}/main/fnpack.json\`\n` +
-  `- 跟随：1Panel 面板 v2 + DeepSeek Harness 官方源 + \`apps.allowlist.txt\` 名单中的应用市场应用\n` +
+  `- 跟随：1Panel 面板 v2 + \`apps.allowlist.txt\` 名单中的应用市场应用\n` +
   `- 同步频率：每天一次（可手动触发），有新版本时自动打包 FPK 并发布 Release。\n\n## 应用列表\n\n| 应用 | 描述 | 上游版本 |\n|------|------|----------|\n${rows.join('\n')}\n`);
 console.log('index updated, apps:', Object.keys(fnpack.apps).join(', '));

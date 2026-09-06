@@ -9,7 +9,7 @@
   "apps": {
     "1panel": {
       "details_url": "apps/1panel.json",
-      "details_updated_at": "2026-09-04T02:33:31.277Z",
+      "details_updated_at": "2026-09-06T11:04:26.453Z",
       "display_name": "1Panel",
       "desc": "开源服务器运维管理面板，提供可视化的 Linux 服务器管理。",
       "platform": [
@@ -31,27 +31,28 @@
       "is_docker": false,
       "service_port": "18090"
     },
-    "deepseek_harness": {
-      "details_url": "apps/deepseek_harness.json",
-      "details_updated_at": "2026-09-04T02:33:31.278Z",
+    "deepseek-harness": {
+      "details_url": "apps/deepseek-harness.json",
+      "details_updated_at": "2026-09-06T11:04:26.455Z",
       "display_name": "DeepSeek Harness",
-      "desc": "DeepSeek Harness 官方原生版：内置完整 DSH 运行时与 Agent 能力。",
+      "desc": "DeepSeek Harness 飞牛 NAS 版：内置离线运行时、插件管理与自更新能力。",
       "platform": [
-        "x86"
+        "x86",
+        "arm"
       ],
       "categories": [
         "AI赋能",
         "系统工具"
       ],
-      "icon_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/deepseek_harness/ICON.PNG",
-      "readme_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/deepseek_harness/README.md",
+      "icon_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/deepseek-harness/ICON.PNG",
+      "readme_url": "https://raw.githubusercontent.com/yoqie/FnDepot/main/assets/deepseek-harness/README.md",
       "bug_report_url": "https://github.com/yoqie/FnDepot/issues",
-      "maintainer": "",
-      "maintainer_url": "https://github.com/deepseek-ai/dsh",
+      "maintainer": "cliii-one",
+      "maintainer_url": "https://github.com/cliii-one/deepseek-harness",
       "distributor": "FnDepot",
       "distributor_url": "https://github.com/yoqie/FnDepot",
-      "run_as": "root",
-      "install_type": "root",
+      "run_as": "package",
+      "install_type": "package",
       "is_docker": false,
       "service_port": "3080"
     }

@@ -1,0 +1,110 @@
+name: Build DeepSeek Harness
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'DSH version (leave empty for next channel)'
+        required: false
+        default: ''
+      channel:
+        description: 'DSH release channel'
+        required: true
+        default: 'stable'
+        type: choice
+        options:
+          - stable
+          - alpha
+  schedule:
+    - cron: '45 18 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86
+            tarball_arch: amd64
+            runner: ubuntu-latest
+          - arch: arm
+            tarball_arch: arm64
+            runner: ubuntu-24.04-arm
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Resolve version
+        id: version
+        run: |
+          set -euo pipefail
+          if [ -n "${{ inputs.version }}" ]; then
+            version="${{ inputs.version }}"
+          elif [ "${{ inputs.channel || 'stable' }}" = alpha ]; then
+            version=$(npm view @deepseek-ai/dsh dist-tags.alpha)
+          else
+            version=$(npm view @deepseek-ai/dsh dist-tags.next)
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Build application
+        working-directory: scripts
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          TARBALL_ARCH: ${{ matrix.tarball_arch }}
+          DSH_CHANNEL: ${{ inputs.channel || 'stable' }}
+        run: bash build-deepseek-harness.sh
+
+      - name: Package FPK
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: bash scripts/package-deepseek-harness.sh "${{ matrix.arch }}" "$VERSION"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deepseek-harness-${{ matrix.arch }}
+          path: dist/*.fpk
+          if-no-files-found: error
+
+  release:
+    name: Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Organize artifacts
+        run: |
+          set -euo pipefail
+          mkdir release
+          find artifacts -name '*.fpk' -exec cp '{}' release/ \;
+          ls -lh release
+      - uses: actions/checkout@v4
+      - name: Update source index
+        run: |
+          node scripts/finalize-deepseek-harness.mjs "${{ github.repository }}" "${{ needs.build.outputs.version }}"
+          node scripts/update-index.mjs --repo "${{ github.repository }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add apps/deepseek-harness.json build/deepseek-harness/meta.json fnpack.json README.md
+          git commit -m "chore: release DeepSeek Harness ${{ needs.build.outputs.version }}" || true
+          git push
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: deepseek-harness-${{ needs.build.outputs.version }}
+          name: DeepSeek Harness ${{ needs.build.outputs.version }}
+          files: release/*.fpk
+          generate_release_notes: true

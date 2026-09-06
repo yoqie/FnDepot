@@ -1,0 +1,11 @@
+[
+    {
+        "stepTitle": "欢迎使用 DeepSeek Harness",
+        "items": [
+            {
+                "type": "tips",
+                "helpText": "<div style='font-size:15px;line-height:1.7;color:#1e293b;'><h3 style='margin:0 0 10px 0;color:#0284c7;font-size:18px;'>🎉 欢迎使用 DeepSeek Harness</h3><p>DeepSeek 官方开源的 AI 本地工作台与编程助手。</p><ul style='padding-left:20px;margin:8px 0;'><li><strong>模型管理：</strong>安装完成后可在 Web 的【设置 → Models】中配置您的 API 密钥和模型</li><li><strong>官方文档：</strong><a target='_blank' href='https://github.com/deepseek-ai/deepseek-harness' style='color:#0284c7;text-decoration:underline;font-weight:bold;'>GitHub 仓库</a></li></ul></div>"
+            }
+        ]
+    }
+]
