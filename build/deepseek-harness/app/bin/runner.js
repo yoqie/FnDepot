@@ -291,7 +291,9 @@ function installBundledPlugins() {
 // 内置插件安装属于"锦上添花"：任何异常都不能阻断 dsh 主服务启动
 try {
     syncPluginSeeds();
-    installBundledPlugins();
+    setTimeout(() => {
+        try { installBundledPlugins(); } catch (error) { console.warn('[Runner] 内置插件安装失败:', error.message); }
+    }, 1000);
 } catch (e) {
     console.warn('[Runner] 内置插件流程异常（不影响启动）:', e.message);
 }
