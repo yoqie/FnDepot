@@ -16,7 +16,7 @@
     "0.1.2-rc.1": {
       "version": "0.1.2-rc.1",
       "release_note": "DeepSeek Harness 0.1.2-rc.1，内置离线运行时、插件市场与插件自更新。",
-      "updated_at": "2026-09-06T12:00:07.443Z",
+      "updated_at": "2026-09-06T12:24:10.955Z",
       "packages": {
         "arm": {
           "version": "0.1.2-rc.1",
@@ -29,5 +29,5 @@
       }
     }
   },
-  "updated_at": "2026-09-06T12:00:07.439Z"
+  "updated_at": "2026-09-06T12:24:10.951Z"
 }
