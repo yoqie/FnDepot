@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DeepSeek Harness 管理器</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;font-family:Inter,"Microsoft YaHei",sans-serif;background:#0b0e14;color:#e5e7eb}.app{display:flex;min-height:100vh}.side{width:230px;padding:20px 14px;background:#10131c;border-right:1px solid #1f2432}.brand{display:flex;gap:10px;align-items:center;padding:14px;border-radius:16px;background:#151a25;margin-bottom:18px}.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#2563eb,#7c3aed);display:grid;place-items:center;font-weight:800}.nav{display:flex;flex-direction:column;gap:6px}.nav button{border:0;text-align:left;padding:12px 14px;border-radius:12px;background:transparent;color:#9ca3af;font-size:14px;cursor:pointer}.nav button.active,.nav button:hover{background:#1c2538;color:#fff}main{flex:1;min-width:0;padding:28px clamp(16px,4vw,48px)}h1{font-size:24px;margin:0 0 18px}.card{background:#12161f;border:1px solid #222939;border-radius:18px;padding:22px;margin-bottom:18px}.muted{color:#8b93a5}.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-top:18px}.metric{padding:16px;border-radius:14px;background:#171d29;border:1px solid #252d3f}.metric b{display:block;font-size:20px;margin-top:6px}.btn{border:0;border-radius:10px;padding:10px 16px;cursor:pointer;background:#2563eb;color:#fff}.btn.secondary{background:#263046}.btn.danger{background:#7f1d1d}.btn:disabled{opacity:.5;cursor:not-allowed}.plugins{display:grid;gap:10px;margin-top:16px}.plugin{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px;border-radius:12px;background:#171d29;border:1px solid #252d3f}.tag{padding:3px 8px;border-radius:999px;background:#123c2b;color:#4ade80;font-size:12px}input{width:min(460px,100%);padding:11px 13px;border-radius:10px;border:1px solid #303a50;background:#0f141d;color:#e5e7eb}pre{white-space:pre-wrap;word-break:break-word;min-height:420px;max-height:70vh;overflow:auto;padding:16px;border-radius:14px;background:#080a10;border:1px solid #222939}.hidden{display:none}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="side">
+      <div class="brand"><div class="logo">D</div><div><b>DeepSeek</b><div class="muted" style="font-size:12px">Harness 管理器</div></div></div>
+      <nav class="nav">
+        <button data-page="overview" class="active">概览</button>
+        <button data-page="plugins">插件管理</button>
+        <button data-page="logs">运行日志</button>
+      </nav>
+    </aside>
+    <main>
+      <section id="overview">
+        <h1>概览</h1>
+        <div class="card">
+          <div class="row">
+            <div><h2 style="margin:0">DeepSeek Harness</h2><div class="muted" id="version">-</div></div>
+            <a class="btn" style="margin-left:auto;text-decoration:none" href="/" target="_blank">进入 Harness</a>
+          </div>
+          <div class="metrics">
+            <div class="metric"><span class="muted">运行状态</span><b id="status">-</b></div>
+            <div class="metric"><span class="muted">运行时间</span><b id="uptime">-</b></div>
+            <div class="metric"><span class="muted">进程 PID</span><b id="pid">-</b></div>
+            <div class="metric"><span class="muted">CPU 占用</span><b id="cpu">-</b></div>
+            <div class="metric"><span class="muted">内存占用</span><b id="memory">-</b></div>
+          </div>
+        </div>
+      </section>
+      <section id="plugins" class="hidden">
+        <h1>插件管理</h1>
+        <div class="card">
+          <div class="row"><input id="plugin-spec" placeholder="输入 npm 包名 / GitHub 插件地址"><button class="btn" id="install">安装插件</button><button class="btn secondary" id="refresh">刷新</button></div>
+          <div class="muted" id="plugin-message" style="margin-top:10px"></div>
+          <div class="plugins" id="plugin-list"></div>
+        </div>
+      </section>
+      <section id="logs" class="hidden">
+        <div class="row"><h1>运行日志</h1><button class="btn secondary" style="margin-left:auto" id="reload-log">刷新</button><button class="btn danger" id="clear-log">清空</button></div>
+        <pre id="log-content">加载中...</pre>
+      </section>
+    </main>
+  </div>
+  <script>
+    const $ = s => document.querySelector(s);
+    let page = 'overview';
+    document.querySelectorAll('.nav button').forEach(button => button.onclick = () => {
+      page = button.dataset.page;
+      document.querySelectorAll('.nav button').forEach(item => item.classList.toggle('active', item === button));
+      ['overview','plugins','logs'].forEach(id => $('#' + id).classList.toggle('hidden', id !== page));
+      if (page === 'plugins') loadPlugins();
+      if (page === 'logs') loadLogs();
+    });
+    async function api(path, options) { return (await fetch('/api/manager' + path, options)).json(); }
+    function uptime(seconds) {
+      const days = Math.floor(seconds / 86400), hours = Math.floor(seconds % 86400 / 3600), minutes = Math.floor(seconds % 3600 / 60);
+      return days ? `${days}天 ${hours}:${minutes}` : `${hours}:${String(minutes).padStart(2,'0')}`;
+    }
+    async function loadStatus() {
+      try {
+        const data = await api('/status');
+        $('#version').textContent = data.version ? `版本 v${data.version}` : '-';
+        $('#status').textContent = data.running ? '运行中' : '已停止';
+        $('#status').style.color = data.running ? '#4ade80' : '#f87171';
+        $('#uptime').textContent = data.running ? uptime(data.uptime) : '-';
+        $('#pid').textContent = data.pid || '-';
+        $('#cpu').textContent = data.cpu;
+        $('#memory').textContent = data.memory;
+      } catch {}
+    }
+    async function loadPlugins() {
+      try {
+        const data = await api('/plugins');
+        $('#plugin-list').innerHTML = data.plugins.length ? '' : '<div class="muted">暂无已安装插件</div>';
+        data.plugins.forEach(plugin => {
+          const item = document.createElement('div');
+          item.className = 'plugin';
+          item.innerHTML = `<div><b>${plugin.name}</b><div class="muted">${plugin.description || ''}</div></div><div class="row"><span class="tag">${plugin.version || '已安装'}</span><button class="btn danger">卸载</button></div>`;
+          item.querySelector('button').onclick = () => opPlugin('/plugins/uninstall', { name: plugin.name }, `正在卸载 ${plugin.name}`);
+          $('#plugin-list').append(item);
+        });
+      } catch {}
+    }
+    async function opPlugin(path, body, doing) {
+      $('#install').disabled = true;
+      $('#plugin-message').textContent = doing || '处理中...';
+      try {
+        const data = await api(path, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+        $('#plugin-message').textContent = data.message || (data.ok ? '完成' : '失败');
+        await loadPlugins();
+      } catch { $('#plugin-message').textContent = '操作失败'; }
+      $('#install').disabled = false;
+    }
+    $('#install').onclick = () => opPlugin('/plugins/install', { spec:$('#plugin-spec').value.trim() }, '正在安装插件...');
+    $('#refresh').onclick = loadPlugins;
+    async function loadLogs() {
+      try {
+        const data = await api('/logs');
+        $('#log-content').textContent = data.content || '暂无日志';
+        $('#log-content').scrollTop = $('#log-content').scrollHeight;
+      } catch { $('#log-content').textContent = '日志读取失败'; }
+    }
+    $('#reload-log').onclick = loadLogs;
+    $('#clear-log').onclick = async () => { await api('/logs', { method:'DELETE' }); loadLogs(); };
+    loadStatus();
+    setInterval(loadStatus, 3000);
+    setInterval(() => { if (page === 'logs') loadLogs(); }, 5000);
+  </script>
+</body>
+</html>

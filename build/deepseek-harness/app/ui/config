@@ -7,7 +7,7 @@
             "type": "iframe",
             "protocol": "http",
             "port": "3080",
-            "url": "/",
+            "url": "/admin/",
             "allUsers": true
         }
     }
