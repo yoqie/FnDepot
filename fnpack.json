@@ -9,7 +9,7 @@
   "apps": {
     "1panel": {
       "details_url": "apps/1panel.json",
-      "details_updated_at": "2026-09-06T13:44:55.820Z",
+      "details_updated_at": "2026-09-06T14:04:23.300Z",
       "display_name": "1Panel",
       "desc": "开源服务器运维管理面板，提供可视化的 Linux 服务器管理。",
       "platform": [
@@ -33,7 +33,7 @@
     },
     "deepseek-harness": {
       "details_url": "apps/deepseek-harness.json",
-      "details_updated_at": "2026-09-06T13:44:55.790Z",
+      "details_updated_at": "2026-09-06T14:04:23.270Z",
       "display_name": "DeepSeek Harness",
       "desc": "DeepSeek Harness 飞牛 NAS 版：内置离线运行时、插件管理与自更新能力。",
       "platform": [
