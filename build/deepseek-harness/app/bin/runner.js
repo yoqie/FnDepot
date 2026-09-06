@@ -1,6 +1,6 @@
 /**
  * DeepSeek Harness - fnOS 统一运行器 (Runner)
- * 1. 负责启动上游 dsh web (127.0.0.1:3081)
+ * 1. 负责启动上游 dsh web (0.0.0.0:3081)
  * 2. 负责启动局域网透明反向代理 (0.0.0.0:3080 -> 127.0.0.1:3081)
  * 3. 自动注入 crypto.randomUUID Polyfill (解决非安全上下文局域网浏览器报错)
  * 4. 精确进程生命周期管理，响应 SIGTERM/SIGINT 秒级退出
@@ -395,10 +395,10 @@ const POLYFILL_SCRIPT = `<script>
 })();
 </script>`;
 
-console.log(`[Runner] 正在启动 DeepSeek Harness 后台服务 (127.0.0.1:${DSH_PORT})...`);
+console.log(`[Runner] 正在启动 DeepSeek Harness 后台服务 (0.0.0.0:${DSH_PORT})...`);
 if (catalogDeduped) console.log('[Runner] 已剔除 llm-deepseek 配置中与内置目录重复的模型条目');
 
-const dshProcess = spawn(NODE_BIN, [DSH_BIN, 'web', '--host', '127.0.0.1', '--port', String(DSH_PORT)], {
+const dshProcess = spawn(NODE_BIN, [DSH_BIN, 'web', '--host', '0.0.0.0', '--port', String(DSH_PORT)], {
     cwd: WORKSPACE_DIR,
     env: {
         ...dshEnv,
