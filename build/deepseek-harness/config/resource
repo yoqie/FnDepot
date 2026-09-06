@@ -8,7 +8,7 @@
                 "name": "DeepSeekHarness",
                 "permission": {
                     "rw": [
-                        "deepseek-harness"
+                        "root"
                     ]
                 }
             }

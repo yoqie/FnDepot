@@ -114,15 +114,17 @@ echo "==> Bundling pnpm ${PNPM_VERSION} for DSH plugin management..."
 test -x "${WORK_DIR}/app_root/bin/pnpm"
 
 # 复制 ui 目录和 runner 脚本至 app_root (解压后位于 ${TRIM_APPDEST})
-if [ -d "${REPO_ROOT}/deepseek-harness/app/ui" ]; then
+if [ -d "${PKG_DIR}/app/ui" ]; then
     echo "==> Bundling desktop UI config..."
-    cp -r "${REPO_ROOT}/deepseek-harness/app/ui" "${WORK_DIR}/app_root/ui"
+    cp -r "${PKG_DIR}/app/ui" "${WORK_DIR}/app_root/ui"
 fi
-if [ -d "${REPO_ROOT}/deepseek-harness/app/bin" ]; then
+if [ -d "${PKG_DIR}/app/bin" ]; then
     echo "==> Bundling runner script..."
-    cp -r "${REPO_ROOT}/deepseek-harness/app/bin/." "${WORK_DIR}/app_root/bin/"
+    cp -r "${PKG_DIR}/app/bin/." "${WORK_DIR}/app_root/bin/"
     chmod +x "${WORK_DIR}/app_root/bin/"* 2>/dev/null || true
 fi
+[ -f "${WORK_DIR}/app_root/bin/runner.js" ] || { echo "❌ runner.js missing from app bundle" >&2; exit 1; }
+[ -f "${WORK_DIR}/app_root/ui/config" ] || { echo "❌ desktop UI config missing from app bundle" >&2; exit 1; }
 
 # 3.5 预下载内置插件的 npm tgz（离线种子）。runner.js 在 NAS 上首次启动时
 # 会把这些 tgz 离线安装到 DSH 的插件 profile，实现"装完即用"，无需 NAS 联网。
