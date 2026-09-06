@@ -31,15 +31,15 @@ rm -f "${FPK}"
 (
   cd "${PKG}"
   tar -cf "${FPK}.tmp" \
-    manifest \
-    ICON.PNG \
-    ICON_256.PNG \
-    app.tgz \
-    cmd/ \
-    config/ \
-    wizard/ \
-    ui/ \
-    DeepSeekHarness.sc
+    ./manifest \
+    ./ICON.PNG \
+    ./ICON_256.PNG \
+    ./app.tgz \
+    ./cmd/ \
+    ./config/ \
+    ./wizard/ \
+    ./ui/ \
+    ./DeepSeekHarness.sc
 )
 gzip -1 "${FPK}.tmp"
 mv "${FPK}.tmp.gz" "${FPK}"
