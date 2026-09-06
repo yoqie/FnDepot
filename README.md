@@ -11,4 +11,4 @@
 | 应用 | 描述 | 上游版本 |
 |------|------|----------|
 | [1Panel](build/1panel/) | 开源服务器运维管理面板，提供可视化的 Linux 服务器管理。 | 2.2.5 |
-| [DeepSeek Harness](build/deepseek-harness/) | DeepSeek Harness 飞牛 NAS 版：内置离线运行时、插件管理与自更新能力。 | 0.1.1-rc.3 |
+| [DeepSeek Harness](build/deepseek-harness/) | DeepSeek Harness 飞牛 NAS 版：内置离线运行时、插件管理与自更新能力。 | 0.1.2-rc.1 |
