@@ -38,5 +38,7 @@ await fs.writeFile(path.join(root, 'build', 'deepseek-harness', 'meta.json'), JS
   upstream: version,
   categories: detail.categories,
   maintainer_url: detail.maintainer_url,
+  run_as: 'root',
+  install_type: 'root',
   updated_at: detail.updated_at,
 }, null, 2) + '\n');
