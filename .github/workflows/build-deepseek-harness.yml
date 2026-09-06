@@ -85,14 +85,8 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          path: artifacts
+          path: ${{ runner.temp }}/fpk-artifacts
       - uses: actions/checkout@v4
-      - name: Organize artifacts
-        run: |
-          set -euo pipefail
-          mkdir release
-          find artifacts -name '*.fpk' -exec cp '{}' release/ \;
-          ls -lh release
       - name: Update source index
         run: |
           node scripts/finalize-deepseek-harness.mjs "${{ github.repository }}" "${{ needs.build.outputs.version }}"
@@ -102,6 +96,9 @@ jobs:
           git add apps/deepseek-harness.json build/deepseek-harness/meta.json fnpack.json README.md
           git commit -m "chore: release DeepSeek Harness ${{ needs.build.outputs.version }}" || true
           git push
+          mkdir -p release
+          find "${{ runner.temp }}/fpk-artifacts" -name '*.fpk' -exec cp '{}' release/ \;
+          ls -lh release
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: deepseek-harness-${{ needs.build.outputs.version }}
