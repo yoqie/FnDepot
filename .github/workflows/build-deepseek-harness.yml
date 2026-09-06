@@ -86,13 +86,13 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
+      - uses: actions/checkout@v4
       - name: Organize artifacts
         run: |
           set -euo pipefail
           mkdir release
           find artifacts -name '*.fpk' -exec cp '{}' release/ \;
           ls -lh release
-      - uses: actions/checkout@v4
       - name: Update source index
         run: |
           node scripts/finalize-deepseek-harness.mjs "${{ github.repository }}" "${{ needs.build.outputs.version }}"
@@ -106,5 +106,7 @@ jobs:
         with:
           tag_name: deepseek-harness-${{ needs.build.outputs.version }}
           name: DeepSeek Harness ${{ needs.build.outputs.version }}
-          files: release/*.fpk
+          files: |
+            release/*.fpk
           generate_release_notes: true
+          fail_on_unmatched_files: true
