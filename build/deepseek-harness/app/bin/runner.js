@@ -400,7 +400,7 @@ const POLYFILL_SCRIPT = `<script>
 console.log(`[Runner] 正在启动 DeepSeek Harness 后台服务 (0.0.0.0:${DSH_PORT})...`);
 if (catalogDeduped) console.log('[Runner] 已剔除 llm-deepseek 配置中与内置目录重复的模型条目');
 
-const dshProcess = spawn(NODE_BIN, [DSH_BIN, 'web', '--host', '0.0.0.0', '--port', String(DSH_PORT)], {
+let dshProcess = spawn(NODE_BIN, [DSH_BIN, 'web', '--host', '0.0.0.0', '--port', String(DSH_PORT)], {
     cwd: WORKSPACE_DIR,
     env: {
         ...dshEnv,
@@ -430,9 +430,8 @@ readline.createInterface({ input: dshProcess.stdout }).on('line', (line) => {
 
 dshProcess.on('exit', (code, signal) => {
     console.log(`[Runner] dsh 进程退出，退出码: ${code}, 信号: ${signal}`);
-    process.exit(code || 0);
+    dshProcess = null;
 });
-
 // ===================== 管理端：概览 / 插件管理 / 运行日志 =====================
 function pluginProfilePath(...parts) { return path.join(WORKSPACE_DIR, '.dsh', 'profiles', DSH_PLUGIN_PROFILE, ...parts); }
 function sendJson(response, statusCode, body) { response.writeHead(statusCode, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); response.end(JSON.stringify(body)); }
