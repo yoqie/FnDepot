@@ -3,8 +3,8 @@
   "appname": "deepseek-harness",
   "displayName": "DeepSeek Harness",
   "desc": "DeepSeek Harness 飞牛 NAS 版：内置离线运行时、插件管理与自更新能力。",
-  "version": "0.1.2-rc.1",
-  "upstream": "0.1.2-rc.1",
+  "version": "0.1.5-rc.2",
+  "upstream": "0.1.5-rc.2",
   "categories": [
     "AI赋能",
     "系统工具"
@@ -12,5 +12,5 @@
   "maintainer_url": "https://github.com/cliii-one/deepseek-harness",
   "run_as": "root",
   "install_type": "root",
-  "updated_at": "2026-09-09T21:15:17.720Z"
+  "updated_at": "2026-09-10T21:14:53.407Z"
 }
