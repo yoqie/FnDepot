@@ -35,22 +35,22 @@
     "0.1.5-rc.2": {
       "version": "0.1.5-rc.2",
       "release_note": "DeepSeek Harness 0.1.5-rc.2，内置离线运行时、插件市场与插件自更新。",
-      "updated_at": "2026-09-11T21:22:07.619Z",
+      "updated_at": "2026-09-12T21:00:22.728Z",
       "packages": {
         "arm": {
           "version": "0.1.5-rc.2",
           "download_url": "https://github.com/yoqie/FnDepot/releases/download/deepseek-harness-0.1.5-rc.2/deepseek-harness_0.1.5-rc.2_arm.fpk",
-          "sha256": "74fc6a31b5278dc47dd524c595f3ccb2beaf36470efc67265d5bef7da0f47cd9",
-          "size": 105234287
+          "sha256": "6562f699124349a07aace513fea6b3c28c9942486860c41bf92efa8952aeea43",
+          "size": 105238139
         },
         "x86": {
           "version": "0.1.5-rc.2",
           "download_url": "https://github.com/yoqie/FnDepot/releases/download/deepseek-harness-0.1.5-rc.2/deepseek-harness_0.1.5-rc.2_x86.fpk",
-          "sha256": "410d4d8b88ffbcc9f1c0598ed632292ad7592f3f9c0726f9d78a9a05f87fa501",
-          "size": 106268739
+          "sha256": "c22ddf3569bfd9854869915c688bed18167e21774573bf1688118fb3ba48161d",
+          "size": 106252756
         }
       }
     }
   },
-  "updated_at": "2026-09-11T21:22:07.619Z"
+  "updated_at": "2026-09-12T21:00:22.728Z"
 }
