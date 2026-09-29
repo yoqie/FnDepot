@@ -126,7 +126,26 @@
           "size": 176092902
         }
       }
+    },
+    "0.2.0-rc.2": {
+      "version": "0.2.0-rc.2",
+      "release_note": "DeepSeek Harness 0.2.0-rc.2，内置离线运行时、插件市场与插件自更新。",
+      "updated_at": "2026-09-29T22:41:18.202Z",
+      "packages": {
+        "arm": {
+          "version": "0.2.0-rc.2",
+          "download_url": "https://github.com/yoqie/FnDepot/releases/download/deepseek-harness-0.2.0-rc.2/deepseek-harness_0.2.0-rc.2_arm.fpk",
+          "sha256": "67dbb5882939d6aa374d9603115a79f72f03548317bbe0bdb01acee43e1ad3f8",
+          "size": 177285595
+        },
+        "x86": {
+          "version": "0.2.0-rc.2",
+          "download_url": "https://github.com/yoqie/FnDepot/releases/download/deepseek-harness-0.2.0-rc.2/deepseek-harness_0.2.0-rc.2_x86.fpk",
+          "sha256": "de89b94d15699c757401d7d81e6db6c340c89b23d208d605fcbb0bc7a216ee4b",
+          "size": 175592479
+        }
+      }
     }
   },
-  "updated_at": "2026-09-28T23:33:46.629Z"
+  "updated_at": "2026-09-29T22:41:18.202Z"
 }
