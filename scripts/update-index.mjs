@@ -23,7 +23,7 @@ const fnpack = { schema_version: '2', source_info: sourceInfo, apps: {} };
 
 const allowlist = (await fs.readFile(path.join(ROOT, 'apps.allowlist.txt'), 'utf8').catch(() => ''))
   .split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));
-const nativeSlugs = ['1panel', 'deepseek-harness'];
+const nativeSlugs = ['1panel', 'dsh'];
 const allSlugs = [...new Set([...nativeSlugs, ...allowlist])];
 
 const rows = [];
