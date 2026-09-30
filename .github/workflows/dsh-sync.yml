@@ -16,6 +16,7 @@ on:
 
 permissions:
   contents: write
+  workflows: write # 迁移会改 .github/workflows/follow-upstream.yml
 
 jobs:
   sync:
