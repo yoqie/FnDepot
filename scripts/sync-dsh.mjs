@@ -113,7 +113,7 @@ const detail = await readJson(detailPath, {
   app_name: SLUG,
   display_name: 'DSH',
   desc: 'DeepSeek Harness（DSH）飞牛NAS版：自动跟进上游最新版本构建，amd64/arm64 双架构原生安装包，飞牛桌面一键打开。',
-  categories: ['AI工具', '开发者'],
+  categories: ['AI赋能', '编程开发'],
   maintainer: 'cliii-one',
   maintainer_url: `https://github.com/${UPSTREAM_REPOS[0]}`,
   run_as: 'root',
