@@ -1,0 +1,56 @@
+name: dsh-sync
+
+# DSH（DeepSeek Harness 飞牛版）同步：
+# - 每日定时检查上游 cliii-one/DSH_FNOS / yoqie/DSH_FNOS 是否有新 Release，
+#   有新版本才同步索引并更新 fnpack.json / README.md
+# - 手动触发可用 force=1 执行一次性迁移（下线旧 DeepSeek Harness 自建链路）
+on:
+  schedule:
+    - cron: '0 21 * * *' # UTC 21:00 = 北京时间次日凌晨 5 点
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'force=1 时先执行迁移（清理旧应用后重建索引）'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 迁移（仅 force=1 时执行）
+        if: github.event.inputs.force == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: node scripts/migrate-dsh.mjs
+
+      - name: 同步上游 Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          node scripts/sync-dsh.mjs
+          node scripts/update-index.mjs
+
+      - name: 提交并推送
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "索引无变化"
+            exit 0
+          fi
+          VERSION=""
+          if [ -f build/dsh/meta.json ]; then VERSION=$(node -p "require('./build/dsh/meta.json').version"); fi
+          git commit -m "chore: sync DSH ${VERSION}"
+          git push
